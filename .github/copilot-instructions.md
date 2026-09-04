@@ -1,0 +1,1 @@
+This is a full-stack travel planner using Python and React. The backend is in the /backend folder and the frontend is in the /frontend folder. Always check both contexts when suggesting cross-stack changes.
