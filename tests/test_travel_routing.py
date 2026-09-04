@@ -1,4 +1,5 @@
 import inspect
+from importlib import import_module
 from itertools import permutations
 
 import pytest
@@ -25,13 +26,23 @@ def route_fn():
     imported_modules = []
 
     for module_name in MODULE_CANDIDATES:
-        module = pytest.importorskip(module_name)
+        try:
+            module = import_module(module_name)
+        except ImportError:
+            continue
+
         imported_modules.append(module_name)
 
         for function_name in FUNCTION_CANDIDATES:
             function = getattr(module, function_name, None)
             if callable(function):
                 return function
+
+    if not imported_modules:
+        pytest.skip(
+            "No routing module found. "
+            f"Expected one of: {MODULE_CANDIDATES}."
+        )
 
     pytest.fail(
         "Could not locate a callable routing function. "
