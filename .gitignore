@@ -216,3 +216,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Raw GTFS feeds are downloaded by each user and never committed (ADR-0011)
+data/raw/
