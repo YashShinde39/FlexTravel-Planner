@@ -10,7 +10,7 @@ revisiting before an interview.
 
 | ADR | Decision | Status |
 | --- | --- | --- |
-| [0001](0001-product-scope.md) | Transit routing for visitors in Delhi NCR, India only, English UI | Accepted |
+| [0001](0001-product-scope.md) | Transit routing for visitors in Delhi NCR (buses + metro), English UI | Accepted |
 | [0002](0002-backend-framework.md) | FastAPI backend, React + TypeScript frontend, monorepo | Accepted |
 | [0003](0003-routing-algorithm.md) | RAPTOR, extended to McRAPTOR on time, changes and fare | Accepted |
 | [0004](0004-access-modes.md) | Walk, auto-rickshaw and app cabs for first and last mile | Accepted |
@@ -20,6 +20,7 @@ revisiting before an interview.
 | [0008](0008-locations-and-landmarks.md) | Stop/landmark search, map pins, Nominatim; landmarks from OSM | Accepted |
 | [0009](0009-hosting.md) | Vercel + managed FastAPI host + managed Postgres | Accepted |
 | [0010](0010-development-workflow.md) | Ownership split, small PRs, restart from scratch | Accepted |
+| [0011](0011-data-sources-and-licensing.md) | Official OTD feeds, raw data kept out of git, NCRTC deferred | Accepted |
 
 ## Template
 

@@ -12,15 +12,17 @@ side, timetable routing and data engineering on the other.
 
 Routing quality depends entirely on transit data. India's open data is uneven. Delhi's
 [Open Transit Data portal](https://otd.delhi.gov.in/documentation) publishes official GTFS
-for DTC buses and Delhi Metro, and a current NCRTC (Namo Bharat) feed is listed in public
-catalogues. Bengaluru has an official bus feed but only a community-built metro feed.
+for DTC buses and Delhi Metro. An NCRTC (Namo Bharat) feed appears in public catalogues, but
+no openly downloadable source was found (see ADR-0011). Bengaluru has an official bus feed
+but only a community-built metro feed.
 Chennai has a community feed. No current feeds were found for Mumbai, Hyderabad or Kochi.
 
 ## Decision
 
 - **Product:** door-to-door journey planning across public transport and first/last-mile
   modes, presenting several options that trade off time, changes and cost.
-- **Geography:** India only. Launch city: **Delhi NCR** (DTC buses, Delhi Metro, NCRTC).
+- **Geography:** India only. Launch city: **Delhi NCR**, starting with DTC buses and Delhi
+  Metro. NCRTC (Namo Bharat) is deferred until open data is available (ADR-0011).
 - **Primary user:** a **visitor or newcomer** who does not know the network. They need
   landmark search, clear step-by-step directions and confidence at each change.
 - **Language:** English only.

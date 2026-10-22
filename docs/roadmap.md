@@ -5,7 +5,7 @@ milestone ships something that works before the next one starts.
 
 ## M1: Delhi data
 
-1. **Feed inspection.** Download the DTC bus, Delhi Metro and NCRTC feeds and write a
+1. **Feed inspection.** Download the DTC bus and Delhi Metro feeds (ADR-0011) and write a
    report on what's actually in them: sizes, service calendars, fare files, coordinate
    quality, times past midnight, stops that should be shared between agencies. The
    decisions that depend on this are fare handling (ADR-0006), bus buffers (ADR-0007) and

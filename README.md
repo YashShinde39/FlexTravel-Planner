@@ -1,7 +1,7 @@
 # FlexTravel Planner
 
 A multi-modal public transport journey planner for India, starting with Delhi NCR
-(DTC buses, Delhi Metro, NCRTC). It shows visitors several route options that trade off
+(DTC buses and Delhi Metro). It shows visitors several route options that trade off
 travel time, number of changes and fare, including auto-rickshaw and cab legs for the
 first and last mile.
 
@@ -13,3 +13,9 @@ first and last mile.
   alternatives, and why.
 - Routing: RAPTOR, extended to McRAPTOR ([ADR-0003](docs/decisions/0003-routing-algorithm.md)).
 - Stack: FastAPI, PostgreSQL + PostGIS, React + TypeScript.
+
+## Data
+
+Transit data: Open Transit Data, Department of Transport, Government of NCT of Delhi
+([otd.delhi.gov.in](https://otd.delhi.gov.in)). Feed files are not included in this
+repository; see [ADR-0011](docs/decisions/0011-data-sources-and-licensing.md).
