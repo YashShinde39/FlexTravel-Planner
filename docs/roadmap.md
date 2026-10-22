@@ -11,7 +11,7 @@ milestone ships something that works before the next one starts.
    decisions that depend on this are fare handling (ADR-0006), bus buffers (ADR-0007) and
    memory budget (ADR-0009).
 2. **Backend skeleton.** FastAPI, Docker Compose with Postgres + PostGIS, Alembic, CI.
-3. **Import.** Load stops, routes, trips, stop times and calendars for all three agencies.
+3. **Import.** Load stops, routes, trips, stop times and calendars for both agencies.
 4. **Transfers** *(owner-built)*. Link stops across agencies with walking footpaths.
 5. **Estimated-time flags** and transfer buffers for buses.
 
