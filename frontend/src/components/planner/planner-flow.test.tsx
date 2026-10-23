@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { AppShell } from '@/components/layout/app-shell'
 import { json, mockApi } from '@/test/api-mock'
-import { SIDE_PANEL_QUERY } from '@/hooks/use-media-query'
+import { DESKTOP_QUERY } from '@/hooks/use-media-query'
 import { setMediaQueries } from '@/test/media'
 
 // jsdom has no WebGL, so the real map can't render here; Playwright covers it in a browser.
@@ -20,7 +20,7 @@ async function chooseTrip(user: ReturnType<typeof userEvent.setup>) {
 
 describe('planning a trip', () => {
   it('suggests places while typing, then lists options and shows directions', async () => {
-    setMediaQueries({ [SIDE_PANEL_QUERY]: true })
+    setMediaQueries({ [DESKTOP_QUERY]: true })
     const fetchMock = mockApi()
     const user = userEvent.setup()
     render(<AppShell />)
@@ -51,8 +51,28 @@ describe('planning a trip', () => {
     })
   })
 
+  it('works the same on phones, through the full-screen search', async () => {
+    mockApi()
+    const user = userEvent.setup()
+    render(<AppShell />)
+
+    await user.click(screen.getByRole('button', { name: 'From' }))
+    await chooseTrip(user)
+
+    // Both places chosen: the search screen gives way to the options under the map.
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    const options = await screen.findByRole('list', { name: 'Route options' })
+    await user.click(within(options).getByRole('button', { name: /^Bus 270/ }))
+    await user.click(screen.getByRole('button', { name: 'Directions for Bus 270' }))
+    expect(screen.getByRole('list', { name: 'Steps' })).toHaveTextContent(/towards/)
+
+    await user.click(screen.getByRole('button', { name: 'Back to all routes' }))
+    await user.click(screen.getByRole('button', { name: 'Edit trip' }))
+    expect(screen.getByRole('button', { name: 'From: Kashmere Gate' })).toBeInTheDocument()
+  })
+
   it("says so when the route planner isn't available", async () => {
-    setMediaQueries({ [SIDE_PANEL_QUERY]: true })
+    setMediaQueries({ [DESKTOP_QUERY]: true })
     mockApi(() =>
       json({ detail: "The route planner isn't available right now. Please try again shortly." }, 503),
     )

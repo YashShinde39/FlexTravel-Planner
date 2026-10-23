@@ -1,6 +1,7 @@
 import { ArrowDownUp, ChevronDown, Clock } from 'lucide-react'
-import { useState } from 'react'
+import { type Ref, useState } from 'react'
 import type { TripPlanner } from '@/hooks/use-trip-planner'
+import { formatDeparture } from '@/lib/format'
 import { PlaceField } from './place-field'
 
 export function OriginMarker() {
@@ -29,15 +30,7 @@ function delhiNow(): string {
 export function DepartureTime({ planner }: { planner: TripPlanner }) {
   const { state, dispatch } = planner
   const [open, setOpen] = useState(false)
-  const label = state.departAt
-    ? `Leave ${new Date(`${state.departAt}:00+05:30`).toLocaleString('en-IN', {
-        timeZone: 'Asia/Kolkata',
-        weekday: 'short',
-        hour: '2-digit',
-        minute: '2-digit',
-        hourCycle: 'h23',
-      })}`
-    : 'Leave now'
+  const label = formatDeparture(state.departAt)
 
   return (
     <div>
@@ -85,10 +78,22 @@ export function DepartureTime({ planner }: { planner: TripPlanner }) {
 
 interface TripFormProps {
   planner: TripPlanner
-  onFieldFocus?: () => void
+  /** See PlaceField: where the suggestions go, if not under the field. */
+  listContainer?: HTMLElement | null
+  fromRef?: Ref<HTMLInputElement>
+  toRef?: Ref<HTMLInputElement>
+  /** Called as a place is picked, while the tap or key press is still being handled. */
+  onPlaceChosen?: (field: 'from' | 'to') => void
 }
 
-export function TripForm({ planner, onFieldFocus }: TripFormProps) {
+/** From and To with type-ahead, a swap button, and the departure time. */
+export function TripForm({
+  planner,
+  listContainer,
+  fromRef,
+  toRef,
+  onPlaceChosen,
+}: TripFormProps) {
   const { state, dispatch } = planner
   const canSwap = Boolean(state.origin || state.destination)
 
@@ -104,20 +109,28 @@ export function TripForm({ planner, onFieldFocus }: TripFormProps) {
           <PlaceField
             key={`from-${state.swaps}`}
             label="From"
-            placeholder="From: stop, station or landmark"
+            placeholder="Where from?"
             value={state.origin}
-            onChange={(place) => dispatch({ type: 'setOrigin', place })}
+            onChange={(place) => {
+              dispatch({ type: 'setOrigin', place })
+              if (place) onPlaceChosen?.('from')
+            }}
             marker={<OriginMarker />}
-            onFocus={onFieldFocus}
+            inputRef={fromRef}
+            listContainer={listContainer}
           />
           <PlaceField
             key={`to-${state.swaps}`}
             label="To"
             placeholder="Where to?"
             value={state.destination}
-            onChange={(place) => dispatch({ type: 'setDestination', place })}
+            onChange={(place) => {
+              dispatch({ type: 'setDestination', place })
+              if (place) onPlaceChosen?.('to')
+            }}
             marker={<DestinationMarker />}
-            onFocus={onFieldFocus}
+            inputRef={toRef}
+            listContainer={listContainer}
           />
         </div>
         <button

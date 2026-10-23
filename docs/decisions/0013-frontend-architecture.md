@@ -15,20 +15,26 @@ vector maps.
 
 ## Decision
 
-- **Layout: map-first.** A full-screen map. On upright phones the planner is a
-  non-dismissible bottom sheet with three heights (peek, half, full); wherever there is
-  room beside the map (≥ 768 px wide, or a phone held sideways, ≥ 560 px) it is a floating
-  side panel, about 40% of the width (320–400 px) and as tall as its contents. The map
-  centres on the area the planner doesn't cover. (Amended 2026-10-24: the panel started at
-  1024 px, which left tablets with a stretched sheet and sideways phones with a sliver
-  of map.)
+- **Layout: map-first, one layout per kind of device, following Uber's web app.**
+  (Amended 2026-10-24; first a full-screen map with a bottom sheet or a floating panel.)
+  - *Laptops and tablets held sideways* (≥ 1024 × 500 px): a top bar, then the planner
+    in columns with the map as an inset card beside them. From 1280 px the form, the
+    route options and the map sit side by side; below that the form becomes a one-line
+    "A → B" summary above the options.
+  - *Phones and tablets held upright*: the map on top, the planner in a fixed panel
+    below it. Before a search it is a short "Where to?" card; tapping a field opens a
+    full-screen search with full-width suggestions. With routes, the map takes the top
+    40% and the options the rest, with Directions pinned at the bottom.
+  - *Phones held sideways* (landscape, ≥ 560 px): planner and map side by side, without
+    the top bar. Uber stacks them here, which leaves a thin strip of map.
+  - The panel on phones is fixed rather than draggable: simpler, and it let us drop
+    `vaul`, whose sheet hid the rest of the page from screen readers.
 - **Map: MapLibre GL + OpenFreeMap.** Open-source vector rendering; free OSM-based tiles
   with no API key. Styles: `positron` (light) and `fiord` (dark). OpenFreeMap's `dark`
   style was rejected because it references a missing texture (black blobs over airports,
   console warnings).
 - **Components: shadcn/ui on Radix**, with the Nova preset (Geist font, Lucide icons).
-  The component source lives in the repo. The bottom sheet uses `vaul` directly, because
-  shadcn's Drawer is a dismissible dialog with an overlay that would block the map.
+  The component source lives in the repo.
 - **Visual direction: clean + transit-line colours.** A neutral greyscale interface
   (near-black primary colour), so that colour is reserved for meaning: Metro line and
   bus route colours on the map and in directions.
@@ -42,8 +48,12 @@ vector maps.
 
 ## Alternatives considered
 
-- **List-first or split layouts.** Simpler, but visitors lose spatial context, and split
-  view degrades into a long scrolling page on phones.
+- **List-first layouts.** Simpler, but visitors lose spatial context. (Split layouts were
+  first rejected too, for degrading into a long page on phones; the 2026-10-24 amendment
+  uses a split per device instead, so each kind of screen gets its own arrangement.)
+- **A draggable bottom sheet on phones** (vaul, or our own). Closer to Uber's app, but
+  vaul's sheet trapped focus and hid the page from screen readers, and our own would be
+  ~150 lines of touch handling to maintain.
 - **MapTiler** (needs a key, has usage limits), **Leaflet + OSM tiles** (policy and dated
   look), **Google Maps** (billing, and conflicts with OSM-based data).
 - **Mantine / MUI** (heavier; apps look like the library), **hand-built components**
