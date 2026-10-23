@@ -15,22 +15,27 @@ jobs:
         working-directory: backend
     services:
       db:
-        # Same image as docker-compose.yml, so CI and local databases match.
+        # Same image and setup as docker-compose.yml, so CI and local databases match.
         image: postgis/postgis:17-3.5
         env:
           POSTGRES_USER: flextravel
           POSTGRES_PASSWORD: flextravel
-          POSTGRES_DB: flextravel_test
+          POSTGRES_DB: flextravel
         ports:
           - 5433:5432
         options: >-
-          --health-cmd "pg_isready -h 127.0.0.1 -U flextravel -d flextravel_test"
+          --health-cmd "pg_isready -h 127.0.0.1 -U flextravel -d flextravel"
           --health-interval 2s --health-timeout 5s --health-retries 30
     env:
       FLEXTRAVEL_TEST_DATABASE_URL: postgresql+asyncpg://flextravel:flextravel@localhost:5433/flextravel_test
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+      # Services can't mount files, so run the same init script docker-compose uses.
+      - name: Create test database
+        run: psql -h localhost -p 5433 -U flextravel -d flextravel -f docker/create-test-db.sql
+        env:
+          PGPASSWORD: flextravel
       - name: Install dependencies (exactly as locked)
         run: uv sync --locked
       - name: Lint

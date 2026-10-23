@@ -1,7 +1,6 @@
-from alembic import command
 from fastapi.testclient import TestClient
 
-from tests.conftest import alembic_config, make_client
+from tests.conftest import make_client
 
 
 def test_health_reports_database_and_postgis(client: TestClient):
@@ -22,13 +21,9 @@ def test_health_is_503_when_database_unreachable():
     assert response.json() == {"status": "unavailable", "database": "unreachable", "postgis": None}
 
 
-def test_health_is_503_when_postgis_missing(database_url: str):
-    config = alembic_config(database_url)
-    command.downgrade(config, "base")
-    try:
-        with make_client(database_url) as client:
-            response = client.get("/api/health")
-        assert response.status_code == 503
-        assert response.json()["database"] == "ok" and response.json()["postgis"] is None
-    finally:
-        command.upgrade(config, "head")
+def test_health_is_503_when_postgis_missing(empty_database_url: str):
+    with make_client(empty_database_url) as client:
+        response = client.get("/api/health")
+
+    assert response.status_code == 503
+    assert response.json() == {"status": "unavailable", "database": "ok", "postgis": None}
