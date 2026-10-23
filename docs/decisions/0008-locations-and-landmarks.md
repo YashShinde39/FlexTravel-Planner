@@ -1,6 +1,7 @@
 # ADR-0008: Stop/landmark search, map pins, Nominatim; landmarks from OSM
 
-- Status: Accepted; map library and tiles superseded by ADR-0013 (MapLibre + OpenFreeMap)
+- Status: Accepted; map library and tiles superseded by ADR-0013 (MapLibre + OpenFreeMap);
+  Nominatim replaced by Photon for search-as-you-type (ADR-0014)
 - Date: 2026-10-23
 
 ## Context

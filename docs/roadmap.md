@@ -7,6 +7,11 @@ milestone ships something that works before the next one starts.
 (ADR-0013). It is built against a contract-first stub API: A shell → B API contract →
 C trip search → D results. Data and routing work continue afterwards in the original order.
 
+**Change (October 2026, later):** instead of a stub, trip planning runs on
+OpenTripPlanner as an interim engine (ADR-0014), with real Delhi bus data, stop and
+station search, and auto/cab estimates. RAPTOR replaces OTP behind the same interface in
+M2; OTP then serves as the reference to check RAPTOR's results against.
+
 ## M1: Delhi data
 
 1. **Feed inspection.** Download the DTC bus and Delhi Metro feeds (ADR-0011) and write a
