@@ -35,6 +35,18 @@ shasum -a 256 data/raw/dtc-bus-mirror-2023.zip
 
 No metro mirror is available.
 
+## Prepare for the planner
+
+```bash
+make data
+```
+
+This downloads the OpenStreetMap extract for northern India from
+[Geofabrik](https://download.geofabrik.de/asia/india.html) into `data/raw/osm/` (once,
+about 220 MB, checksum verified), cuts it to Delhi NCR, cleans the bus feed (ADR-0012),
+loads stops and stations into Postgres and builds the OpenTripPlanner graph (ADR-0014).
+Outputs go to `data/work/`. OpenStreetMap data is © OpenStreetMap contributors, ODbL.
+
 ## Inspect
 
 ```bash

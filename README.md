@@ -12,6 +12,8 @@ first and last mile.
 - [Architecture decision records](docs/decisions/README.md): what was decided, the
   alternatives, and why.
 - Routing: RAPTOR, extended to McRAPTOR ([ADR-0003](docs/decisions/0003-routing-algorithm.md)).
+  Until it's built, OpenTripPlanner runs behind the same interface
+  ([ADR-0014](docs/decisions/0014-interim-routing-engine.md)).
 - Stack: FastAPI, PostgreSQL + PostGIS, React + TypeScript, MapLibre ([ADR-0013](docs/decisions/0013-frontend-architecture.md)).
 
 ## Getting started
@@ -21,8 +23,12 @@ and Node.js 20.19+.
 
 ```bash
 make install   # backend and frontend dependencies
-make dev       # database + API + web app in one terminal; Ctrl+C stops them
+make data      # first time only: map, bus and station data + route planner graph (~2 min)
+make dev       # database + route planner + API + web app; Ctrl+C stops them
 ```
+
+`make data` needs the bus feed in `data/raw/` first: see [data/README.md](data/README.md)
+(one `curl` command).
 
 Then open http://127.0.0.1:5173 (app) or http://127.0.0.1:8000/docs (API).
 
@@ -32,14 +38,17 @@ To debug one side, run them in separate terminals: `make dev-api` and `make dev-
 | --- | --- |
 | `make test` / `make test-web` / `make e2e` | Backend tests / frontend unit tests / browser tests |
 | `make lint` | Lint backend and frontend |
-| `make db-down` / `make db-reset` | Stop the database / wipe it and start fresh |
+| `make data` | Rebuild the planner's data, e.g. after downloading a newer feed |
+| `make db-down` / `make db-reset` | Stop the database and planner / wipe the database and start fresh |
 
 ### Troubleshooting
 
 | Message | Fix |
 | --- | --- |
 | `Docker isn't running` | Open OrbStack and run the command again. |
-| `Port 8000 is busy` / `Port 5173 is busy` | Another dev server is still running (perhaps in another terminal). Stop it with Ctrl+C, or pick other ports: `API_PORT=8001 WEB_PORT=5174 make dev`. |
+| `Port 8000 is busy` / `Port 5173 is busy` | Another dev server is still running (perhaps in another terminal). Stop it with Ctrl+C, or pick other ports: `API_PORT=8002 WEB_PORT=5175 make dev` (8001/5174 are the prototype's). |
+| `Route planning is off until the data is prepared` | Run `make data` once, then `make dev` again. |
+| Search shows stops but no landmarks or addresses | Landmark search uses Photon, a public service; it may be briefly unavailable. Stops and stations keep working. |
 | `VIRTUAL_ENV ... does not match the project environment` | A different Python environment is active in your shell. Harmless, but `deactivate` removes it. |
 | `No rule to make target` | Run `make` from the repository root (the folder containing `Makefile`). |
 

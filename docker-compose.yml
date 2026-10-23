@@ -22,5 +22,32 @@ services:
       timeout: 5s
       retries: 30
 
+  # OpenTripPlanner: the interim routing engine (ADR-0014), until our own RAPTOR replaces it.
+  # Serves the graph that `make data` builds into data/work/otp/.
+  otp:
+    image: opentripplanner/opentripplanner:2.10.0
+    command: ["--load", "--serve"]
+    environment:
+      JAVA_OPTS: -Xmx3g
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data/work/otp:/var/opentripplanner
+      - ./otp/build-config.json:/var/opentripplanner/build-config.json:ro
+      - ./otp/router-config.json:/var/opentripplanner/router-config.json:ro
+      - ./otp/otp-config.json:/var/opentripplanner/otp-config.json:ro
+    healthcheck:
+      # The image has no curl or wget, but bash (not sh) can speak HTTP over /dev/tcp.
+      test:
+        - CMD
+        - bash
+        - -c
+        - >-
+          exec 3<>/dev/tcp/127.0.0.1/8080 &&
+          printf 'GET /otp/actuators/health HTTP/1.0\r\n\r\n' >&3 && grep -q UP <&3
+      interval: 2s
+      timeout: 5s
+      retries: 60
+
 volumes:
   db-data:
