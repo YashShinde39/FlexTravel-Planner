@@ -10,7 +10,7 @@ revisiting before an interview.
 
 | ADR | Decision | Status |
 | --- | --- | --- |
-| [0001](0001-product-scope.md) | Transit routing for visitors in Delhi NCR (buses + metro), English UI | Accepted |
+| [0001](0001-product-scope.md) | Transit routing for visitors in Delhi NCR (buses + metro), English UI | Accepted (scope extended by 0015) |
 | [0002](0002-backend-framework.md) | FastAPI backend, React + TypeScript frontend, monorepo | Accepted |
 | [0003](0003-routing-algorithm.md) | RAPTOR, extended to McRAPTOR on time, changes and fare | Accepted |
 | [0004](0004-access-modes.md) | Walk, auto-rickshaw and app cabs for first and last mile | Accepted |
@@ -20,10 +20,11 @@ revisiting before an interview.
 | [0008](0008-locations-and-landmarks.md) | Stop/landmark search, map pins, Nominatim; landmarks from OSM | Accepted (map part superseded by 0013, geocoder by 0014) |
 | [0009](0009-hosting.md) | Vercel + managed FastAPI host + managed Postgres | Accepted |
 | [0010](0010-development-workflow.md) | Ownership split, small PRs, restart from scratch | Accepted |
-| [0011](0011-data-sources-and-licensing.md) | Official OTD feeds, raw data kept out of git, NCRTC deferred | Accepted |
+| [0011](0011-data-sources-and-licensing.md) | Official OTD feeds, raw data kept out of git, NCRTC deferred | Accepted (NCRTC brought forward by 0015) |
 | [0012](0012-bus-feed-cleaning-and-display.md) | Bus feed cleaning (calendar, duplicate stops, same-spot stops) and route-code display | Accepted |
 | [0013](0013-frontend-architecture.md) | Map-first frontend: MapLibre + OpenFreeMap, shadcn/ui, dark mode, contract-first API | Accepted |
 | [0014](0014-interim-routing-engine.md) | OpenTripPlanner as the interim routing engine, behind our own interface; Photon for search | Accepted |
+| [0015](0015-product-direction-vs-rome2rio.md) | Beat Rome2rio on Delhi NCR in depth: Metro first, trust labels, more local modes, saved trips without login | Accepted |
 
 ## Template
 
