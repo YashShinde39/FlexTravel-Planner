@@ -219,3 +219,5 @@ __marimo__/
 
 # Raw GTFS feeds are downloaded by each user and never committed (ADR-0011)
 data/raw/
+# Local working files derived from feeds (e.g. investigation lists); never committed
+data/work/

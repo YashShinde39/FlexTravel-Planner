@@ -60,19 +60,16 @@ Each route has exactly one stop pattern (2,964 patterns), so routes map one-to-o
 RAPTOR routes. 3.3 M stop events ≈ 39 MB as compact arrays, versus ≈ 650 MB as Python
 objects. **Compact arrays are required** to fit a free hosting tier.
 
-## Open questions for the owner
+## Decisions
 
-These need decisions before the import (roadmap M1.3) is built:
+Recorded in [ADR-0012](../decisions/0012-bus-feed-cleaning-and-display.md):
 
-1. **Expired calendar.** Treat every trip as running every day (ignoring dates), or shift
-   the calendar to a rolling window? Either way, results should say the timetable dates
-   from 2023.
-2. **Repeated consecutive stops** (finding 6). Collapse them during import (keeping the
-   first arrival and the last departure), or keep the feed exactly as published?
-3. **Stops at identical coordinates with different names.** Merge them into one stop, or
-   keep them separate and link them with a zero-length transfer? This feeds directly into
-   the transfer-linking stage you own.
-4. **Route name codes.** Do you know what `STL`, `EXT`, `LNK` mean in Delhi bus route
-   numbers? Local knowledge counts here; otherwise we look for a DTC source.
-5. **Bus transfer buffer** (ADR-0007). Since times are pure estimates, how many minutes?
-   This can be settled when building transfers.
+1. **Expired calendar:** ignore dates and run every trip daily; label the timetable as 2023.
+2. **Repeated consecutive stops:** collapse them. Investigation ruled out loops (identical
+   times, adjacent sequence numbers, no turnaround pattern). The 2,293 trips with genuine
+   revisits are kept.
+3. **Same-spot stops:** pending the owner's map review
+   (`scripts/list_same_spot_stops.py`).
+4. **Route codes:** shown as printed on the bus, explained only where verified against the
+   data (STL and A/B/C confirmed; EXT contradicted).
+5. **Bus transfer buffer:** decided in the transfer-linking stage.
