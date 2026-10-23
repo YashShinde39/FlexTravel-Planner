@@ -14,6 +14,7 @@ from zoneinfo import ZoneInfo
 from app.trips import fares
 from app.trips.engine import Itinerary, StreetRoute, TripPlanner
 from app.trips.schemas import (
+    Fare,
     Leg,
     Location,
     OptionKind,
@@ -48,9 +49,11 @@ WAIT = {"auto": timedelta(minutes=3), "cab": timedelta(minutes=6)}
 
 NOTICES = [
     "Bus times are estimates from the 2023 timetable (the latest published).",
-    "Metro routes aren't included yet: the official metro timetable can't be downloaded "
-    "at the moment.",
+    "Metro and Namo Bharat times are estimates from published frequencies: their "
+    "official timetables can't be downloaded at the moment.",
 ]
+
+RAPID_METRO_AGENCY = "Rapid Metro Gurgaon"
 
 
 def in_delhi_time(depart_at: datetime | None) -> datetime:
@@ -75,6 +78,46 @@ def _journey_key(itinerary: Itinerary) -> tuple:
     )
 
 
+def _ride_title(leg: Leg) -> str:
+    """A ride's name in titles: "Bus 270", or a Metro line's name, e.g. "Yellow Line"."""
+    if leg.route is None:
+        return leg.mode.capitalize()
+    return f"Bus {leg.route.code}" if leg.mode == "bus" else leg.route.code
+
+
+def transit_fare(rides: list[Leg]) -> Fare | None:
+    """The fare for a journey's rides: one ticket per bus; one per Metro journey, so
+    changing lines inside a station adds nothing; Rapid Metro and Namo Bharat separately.
+    None if a ride can't be priced."""
+    parts: list[Fare] = []
+    metro_m = 0.0  # length of the Metro journey in progress
+    for index, ride in enumerate(rides):
+        next_ride = rides[index + 1] if index + 1 < len(rides) else None
+        if ride.mode == "bus":
+            parts.append(fares.bus_fare([ride.distance_m]))
+        elif ride.mode == "rail":
+            parts.append(fares.namo_bharat_fare(ride.distance_m))
+        elif ride.mode == "metro" and ride.route and ride.route.agency == RAPID_METRO_AGENCY:
+            parts.append(fares.rapid_metro_fare())
+        elif ride.mode == "metro":
+            metro_m += ride.distance_m
+            # The journey continues if the next ride is another Delhi Metro line boarded in
+            # the same station; otherwise the traveller leaves the station here.
+            continues = (
+                next_ride is not None
+                and next_ride.mode == "metro"
+                and next_ride.route is not None
+                and next_ride.route.agency != RAPID_METRO_AGENCY
+                and next_ride.start.name == ride.end.name
+            )
+            if not continues:
+                parts.append(fares.metro_fare(metro_m, ride.departure))
+                metro_m = 0.0
+        else:
+            return None
+    return fares.combine(parts) if parts else None
+
+
 def transit_options(itineraries: Iterable[Itinerary]) -> list[TripOption]:
     groups: dict[tuple, list[Itinerary]] = {}
     for itinerary in sorted(itineraries, key=lambda i: i.legs[-1].arrival):
@@ -84,11 +127,7 @@ def transit_options(itineraries: Iterable[Itinerary]) -> list[TripOption]:
     for key, group in groups.items():
         first, later = group[0], group[1:]
         rides = [leg for leg in first.legs if leg.mode != "walk"]
-        title = " + ".join(
-            f"{leg.mode.capitalize()} {leg.route.code}" if leg.route else leg.mode.capitalize()
-            for leg in rides
-        )
-        bus_rides = [leg.distance_m for leg in rides if leg.mode == "bus"]
+        title = " + ".join(_ride_title(leg) for leg in rides)
         options.append(
             TripOption(
                 id=_option_id(key, first.legs[0].departure),
@@ -99,8 +138,7 @@ def transit_options(itineraries: Iterable[Itinerary]) -> list[TripOption]:
                 duration_s=int((first.legs[-1].arrival - first.legs[0].departure).total_seconds()),
                 transfers=first.transfers,
                 walk_m=sum(leg.distance_m for leg in first.legs if leg.mode == "walk"),
-                # Only buses are routed today; metro fares arrive with the metro feed.
-                fare=fares.bus_fare(bus_rides) if len(bus_rides) == len(rides) else None,
+                fare=transit_fare(rides),
                 legs=first.legs,
                 later_departures=[i.legs[0].departure for i in later[:MAX_LATER_DEPARTURES]],
             )

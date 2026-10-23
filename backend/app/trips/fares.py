@@ -2,7 +2,8 @@
 the sources when updating, and change AS_OF.
 
 The bus feed has no fare files, so bus fares come from DTC's distance slabs. Whether a bus
-is AC isn't in the feed, so bus fares are a range from non-AC to AC.
+is AC isn't in the feed, so bus fares are a range from non-AC to AC. Metro fares come
+from the Delhi Metro's distance slabs; Rapid Metro and Namo Bharat are priced separately.
 """
 
 import math
@@ -10,7 +11,7 @@ from datetime import datetime
 
 from app.trips.schemas import Fare
 
-AS_OF = "2026-10-23"
+AS_OF = "2026-10-24"
 
 # DTC and cluster buses: (up to metres, rupees). Long-standing slabs, published by DTC;
 # third-party 2026 guides agree (https://buspe.app/guides/delhi-bus-fares-passes).
@@ -29,6 +30,32 @@ NIGHT_SURCHARGE, NIGHT_START, NIGHT_END = 0.25, 23, 5
 # (ADR-0004), so the metered tariff is the honest reference point.
 TAXI_BASE, TAXI_BASE_M, TAXI_PER_KM_NON_AC, TAXI_PER_KM_AC = 40, 1_000, 17, 20
 CAB_NOTE = "Government taxi meter rate. App cab prices vary with demand."
+
+
+# Delhi Metro, from 25 August 2025: (up to metres, rupees), and cheaper slabs on Sundays and
+# national holidays. Smart cards take 10% off (another 10% off-peak).
+# https://www.theweek.in/news/india/2025/08/25/delhi-metro-fare-hike-minimum-ticket-price-now-is-11-check-full-details-here.amp.html
+METRO = ((2_000, 11), (5_000, 21), (12_000, 32), (21_000, 43), (32_000, 54), (math.inf, 64))
+METRO_SUNDAY = (
+    (2_000, 11),
+    (5_000, 11),
+    (12_000, 21),
+    (21_000, 32),
+    (32_000, 43),
+    (math.inf, 54),
+)
+METRO_NOTE = "Metro token fare; smart cards save 10%."
+
+# Rapid Metro Gurgaon: ₹20 for one station up to ₹35 for the whole loop (Godrej Properties
+# guide, January 2025). Not part of the Delhi Metro fare.
+RAPID_METRO = (20, 35)
+RAPID_METRO_NOTE = "Rapid Metro is a separate ticket."
+
+# Namo Bharat, standard coach: about ₹2.7 per km (Anand Vihar - Meerut South ₹130, New
+# Ashok Nagar - Meerut South ₹150; PTI, 2025), at least ₹20 (NCRTC at launch, 2023).
+# Premium coaches cost 1.2 times as much (NCRTC, June 2025).
+NAMO_BHARAT_PER_KM, NAMO_BHARAT_MIN, PREMIUM_FACTOR = 2.7, 20, 1.2
+NAMO_BHARAT_NOTE = "Namo Bharat fare estimated from published fares; standard to premium coach."
 
 
 def _slab(table: tuple[tuple[float, int], ...], distance_m: float) -> int:
@@ -66,4 +93,32 @@ def cab_fare(distance_m: float) -> Fare:
         min=math.ceil(_metered(TAXI_BASE, TAXI_BASE_M, TAXI_PER_KM_NON_AC, distance_m)),
         max=math.ceil(_metered(TAXI_BASE, TAXI_BASE_M, TAXI_PER_KM_AC, distance_m)),
         note=CAB_NOTE,
+    )
+
+
+def metro_fare(distance_m: float, at: datetime) -> Fare:
+    """One Delhi Metro journey, priced by its length; changing lines inside a station is
+    part of the same journey. (The Metro charges the shortest distance between entry and
+    exit, which the route ridden can exceed slightly.)"""
+    table = METRO_SUNDAY if at.weekday() == 6 else METRO
+    amount = _slab(table, distance_m)
+    return Fare(min=amount, max=amount, note=METRO_NOTE)
+
+
+def rapid_metro_fare() -> Fare:
+    return Fare(min=RAPID_METRO[0], max=RAPID_METRO[1], note=RAPID_METRO_NOTE)
+
+
+def namo_bharat_fare(distance_m: float) -> Fare:
+    standard = max(NAMO_BHARAT_MIN, 5 * round(distance_m / 1000 * NAMO_BHARAT_PER_KM / 5))
+    return Fare(min=standard, max=5 * round(standard * PREMIUM_FACTOR / 5), note=NAMO_BHARAT_NOTE)
+
+
+def combine(parts: list[Fare]) -> Fare:
+    """The fare for a journey of several tickets: their sums, with each note once."""
+    notes = dict.fromkeys(part.note for part in parts if part.note)
+    return Fare(
+        min=sum(part.min for part in parts),
+        max=sum(part.max for part in parts),
+        note=" ".join(notes) or None,
     )
