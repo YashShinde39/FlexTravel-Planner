@@ -221,6 +221,3 @@ __marimo__/
 data/raw/
 # Local working files derived from feeds (e.g. investigation lists); never committed
 data/work/
-
-# The Python template above ignores every lib/ folder; the frontend keeps source in src/lib.
-!frontend/src/lib/

@@ -14,8 +14,8 @@ jobs:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
@@ -33,10 +33,8 @@ jobs:
         run: npm run e2e
       - name: Upload Playwright traces on failure
         if: failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-traces
           path: frontend/test-results
           retention-days: 7
-          # Earlier steps (lint, build) can fail before any traces exist.
-          if-no-files-found: ignore
