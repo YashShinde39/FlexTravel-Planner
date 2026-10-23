@@ -14,22 +14,36 @@ first and last mile.
 - Routing: RAPTOR, extended to McRAPTOR ([ADR-0003](docs/decisions/0003-routing-algorithm.md)).
 - Stack: FastAPI, PostgreSQL + PostGIS, React + TypeScript, MapLibre ([ADR-0013](docs/decisions/0013-frontend-architecture.md)).
 
-## Frontend
+## Getting started
+
+Prerequisites: [OrbStack](https://orbstack.dev) (or another Docker), [uv](https://docs.astral.sh/uv/)
+and Node.js 20.19+.
 
 ```bash
-cd frontend && npm install && npm run dev   # http://localhost:5173
+make install   # backend and frontend dependencies
+make dev       # database + API + web app in one terminal; Ctrl+C stops them
 ```
 
-Details in [frontend/README.md](frontend/README.md).
+Then open http://127.0.0.1:5173 (app) or http://127.0.0.1:8000/docs (API).
 
-## Development
+To debug one side, run them in separate terminals: `make dev-api` and `make dev-web`.
 
-```bash
-make db-up && make migrate && make dev   # API on http://127.0.0.1:8000/docs
-make test
-```
+| Command | What it does |
+| --- | --- |
+| `make test` / `make test-web` / `make e2e` | Backend tests / frontend unit tests / browser tests |
+| `make lint` | Lint backend and frontend |
+| `make db-down` / `make db-reset` | Stop the database / wipe it and start fresh |
 
-Details in [backend/README.md](backend/README.md).
+### Troubleshooting
+
+| Message | Fix |
+| --- | --- |
+| `Docker isn't running` | Open OrbStack and run the command again. |
+| `Port 8000 is busy` / `Port 5173 is busy` | Another dev server is still running (perhaps in another terminal). Stop it with Ctrl+C, or pick other ports: `API_PORT=8001 WEB_PORT=5174 make dev`. |
+| `VIRTUAL_ENV ... does not match the project environment` | A different Python environment is active in your shell. Harmless, but `deactivate` removes it. |
+| `No rule to make target` | Run `make` from the repository root (the folder containing `Makefile`). |
+
+More detail: [backend/README.md](backend/README.md), [frontend/README.md](frontend/README.md).
 
 ## Data
 
