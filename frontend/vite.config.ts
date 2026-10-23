@@ -14,7 +14,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 1200,
   },
   server: {
-    // Forward API calls to the FastAPI dev server (`make dev`).
-    proxy: { '/api': 'http://127.0.0.1:8000' },
+    // Forward API calls to the FastAPI dev server (`make dev`). scripts/dev.sh sets API_PORT.
+    proxy: { '/api': `http://127.0.0.1:${process.env.API_PORT ?? 8000}` },
   },
 })

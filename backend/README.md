@@ -11,7 +11,7 @@ macOS). From the repository root:
 ```bash
 make db-up     # Postgres + PostGIS on localhost:5433 (creates flextravel and flextravel_test)
 make migrate   # apply migrations to the development database
-make dev       # API on http://127.0.0.1:8000, interactive docs at /docs
+make dev-api   # API on http://127.0.0.1:8000, interactive docs at /docs (`make dev` also starts the web app)
 make test      # tests run against flextravel_test
 ```
 
