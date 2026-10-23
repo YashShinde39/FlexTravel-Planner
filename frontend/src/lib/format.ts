@@ -38,3 +38,16 @@ export function formatFare(fare: Fare): string {
 export function minutesUntil(iso: string, now: Date = new Date()): number {
   return Math.round((new Date(iso).getTime() - now.getTime()) / 60_000)
 }
+
+/** "Leave now", or "Leave Sat, 18:30" for a chosen Delhi time (`YYYY-MM-DDTHH:mm`). */
+export function formatDeparture(departAt: string | null): string {
+  if (!departAt) return 'Leave now'
+  const when = new Date(`${departAt}:00+05:30`).toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  })
+  return `Leave ${when}`
+}

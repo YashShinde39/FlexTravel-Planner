@@ -40,12 +40,10 @@ function OptionRow({
   option,
   selected,
   onSelect,
-  onDirections,
 }: {
   option: TripOption
   selected: boolean
   onSelect: () => void
-  onDirections?: () => void
 }) {
   const estimated = option.legs.some((leg) => leg.times_estimated)
   const firstRide = option.legs.find((leg) => leg.mode !== 'walk')
@@ -98,15 +96,6 @@ function OptionRow({
           </span>
         </span>
       </button>
-      {selected && onDirections && (
-        <button
-          type="button"
-          onClick={onDirections}
-          className="mt-1 mb-2 h-11 w-full rounded-lg bg-foreground text-base font-semibold text-background hover:bg-foreground/85"
-        >
-          Directions
-        </button>
-      )}
     </li>
   )
 }
@@ -115,11 +104,9 @@ interface OptionListProps {
   options: TripOption[]
   selectedId: string | null
   onSelect: (id: string) => void
-  /** Shows a Directions button under the selected option (phones; desktop has a footer). */
-  onDirections?: () => void
 }
 
-export function OptionList({ options, selectedId, onSelect, onDirections }: OptionListProps) {
+export function OptionList({ options, selectedId, onSelect }: OptionListProps) {
   return (
     <ul aria-label="Route options" className="flex flex-col gap-1">
       {options.map((option) => (
@@ -128,7 +115,6 @@ export function OptionList({ options, selectedId, onSelect, onDirections }: Opti
           option={option}
           selected={option.id === selectedId}
           onSelect={() => onSelect(option.id)}
-          onDirections={onDirections}
         />
       ))}
     </ul>

@@ -1,30 +1,27 @@
-import { Pencil } from 'lucide-react'
+import { ArrowRight, ChevronDown } from 'lucide-react'
 import type { TripPlanner } from '@/hooks/use-trip-planner'
-import { DestinationMarker, DepartureTime, OriginMarker } from './trip-form'
+import { formatDeparture } from '@/lib/format'
 
-/** The chosen trip in two lines, shown above the options; tapping it edits the trip. */
+/** The chosen trip in one box above the options, as "A → B" and when; tapping it edits the trip. */
 export function TripSummary({ planner }: { planner: TripPlanner }) {
   const { state, dispatch } = planner
+  const when = formatDeparture(state.departAt)
   return (
-    <div className="flex flex-col gap-3">
-      <button
-        type="button"
-        onClick={() => dispatch({ type: 'back' })}
-        aria-label={`Edit trip from ${state.origin?.name} to ${state.destination?.name}`}
-        className="group relative flex items-center gap-3 rounded-xl bg-muted px-4 py-3 text-left hover:bg-accent"
-      >
-        <span className="relative flex flex-col items-center gap-[1.15rem] self-stretch py-1.5">
-          <span className="absolute top-3 bottom-3 w-px bg-foreground/50" aria-hidden />
-          <OriginMarker />
-          <DestinationMarker />
+    <button
+      type="button"
+      onClick={() => dispatch({ type: 'back' })}
+      aria-label={`Edit trip from ${state.origin?.name} to ${state.destination?.name}`}
+      className="flex w-full items-center gap-3 rounded-xl border-2 px-4 py-2.5 text-left hover:bg-muted"
+    >
+      <span className="min-w-0 flex-1">
+        <span className="flex items-center gap-1.5 font-medium">
+          <span className="truncate">{state.origin?.name}</span>
+          <ArrowRight className="size-4 shrink-0" aria-hidden />
+          <span className="truncate">{state.destination?.name}</span>
         </span>
-        <span className="min-w-0 flex-1 space-y-1.5">
-          <span className="block truncate font-medium">{state.origin?.name}</span>
-          <span className="block truncate font-medium">{state.destination?.name}</span>
-        </span>
-        <Pencil className="size-4 shrink-0 text-muted-foreground group-hover:text-foreground" aria-hidden />
-      </button>
-      <DepartureTime planner={planner} />
-    </div>
+        <span className="block text-sm text-muted-foreground">{when}</span>
+      </span>
+      <ChevronDown className="size-4 shrink-0" aria-hidden />
+    </button>
   )
 }

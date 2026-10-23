@@ -31,14 +31,25 @@ const DELHI = { longitude: 77.209, latitude: 28.6139, zoom: 10.5 }
 // Roughly Delhi NCR (west, south, east, north): keeps the camera where the planner has data.
 const NCR_BOUNDS: [number, number, number, number] = [76.6, 28.15, 77.75, 29.0]
 
-// Room around a fitted route, on top of the space the planner covers.
-const FIT_MARGIN = 60
+// OpenStreetMap's attribution guidelines allow collapsing the map's credit after five
+// seconds, as long as the (i) button still shows it. Left open, it covers much of a phone's map.
+const ATTRIBUTION_COLLAPSE_MS = 5000
 
-interface MapViewProps {
+// Room around a fitted route, on top of the padding: up to 60px, less on a small map.
+const FIT_MARGIN = 60
+const FIT_MARGIN_SHARE = 0.12
+
+export interface MapViewProps {
   colorScheme: ColorScheme
-  isDesktop: boolean
-  /** Screen space covered by the planner, so the map centres on what is still visible. */
+  /** Phones zoom by pinching; mice need buttons. */
+  showZoomButtons: boolean
+  /** Space over the map's edges taken by floating buttons, kept clear when framing routes. */
   padding: PaddingOptions
+  /**
+   * Changes when the map's box may have changed size (e.g. the options column appearing
+   * beside it), so the route is framed again for the new size.
+   */
+  frameKey: string
   origin: Place | null
   destination: Place | null
   option: TripOption | null
@@ -55,13 +66,25 @@ function boundsOf(points: [number, number][]): LngLatBounds | null {
 
 export default function MapView({
   colorScheme,
-  isDesktop,
+  showZoomButtons,
   padding,
+  frameKey,
   origin,
   destination,
   option,
 }: MapViewProps) {
   const mapRef = useRef<MapRef>(null)
+  const collapseTimer = useRef<number | undefined>(undefined)
+  useEffect(() => () => window.clearTimeout(collapseTimer.current), [])
+
+  function collapseAttributionLater() {
+    collapseTimer.current = window.setTimeout(() => {
+      mapRef.current
+        ?.getContainer()
+        .querySelector('.maplibregl-compact-show')
+        ?.classList.remove('maplibregl-compact-show')
+    }, ATTRIBUTION_COLLAPSE_MS)
+  }
 
   // Move the camera when what's shown changes: fit the route, or frame the chosen places.
   useEffect(() => {
@@ -72,13 +95,17 @@ export default function MapView({
       : [origin, destination].filter((p) => p !== null).map((p) => [p.lon, p.lat])
     const bounds = boundsOf(points)
     if (!bounds) return
+    // Read the box's current size now; MapLibre would otherwise notice a change a frame later.
+    map.resize()
     if (points.length === 1) {
       map.flyTo({ center: points[0], zoom: Math.max(map.getZoom(), 13), duration: 800 })
     } else {
-      map.fitBounds(bounds, { padding: FIT_MARGIN, maxZoom: 16, duration: 800 })
+      const { clientWidth, clientHeight } = map.getContainer()
+      const margin = Math.min(FIT_MARGIN, Math.round(Math.min(clientWidth, clientHeight) * FIT_MARGIN_SHARE))
+      map.fitBounds(bounds, { padding: margin, maxZoom: 16, duration: 800 })
     }
     // Padding is listed by value: the object itself is new on every render.
-  }, [option, origin, destination, padding.top, padding.bottom, padding.left, padding.right])
+  }, [option, origin, destination, padding.top, padding.bottom, padding.left, padding.right, frameKey])
 
   return (
     <Map
@@ -89,6 +116,7 @@ export default function MapView({
       mapStyle={MAP_STYLES[colorScheme]}
       padding={padding}
       attributionControl={false}
+      onLoad={collapseAttributionLater}
       style={{ position: 'absolute', inset: 0 }}
     >
       <TripLayers
@@ -97,9 +125,8 @@ export default function MapView({
         destination={destination}
         option={option}
       />
-      {/* On phones AppShell lifts the bottom-right controls above the sheet's edge. */}
       <AttributionControl compact position="bottom-right" />
-      {isDesktop && <NavigationControl position="bottom-right" showCompass={false} />}
+      {showZoomButtons && <NavigationControl position="bottom-right" showCompass={false} />}
       <GeolocateControl position="bottom-right" positionOptions={{ enableHighAccuracy: true }} />
     </Map>
   )

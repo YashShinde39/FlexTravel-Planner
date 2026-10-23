@@ -1,5 +1,6 @@
 import { BusFront, Landmark, LoaderCircle, MapPin, TrainFront, TramFront, X } from 'lucide-react'
-import { type ReactNode, useId, useState } from 'react'
+import { type ReactNode, type Ref, useId, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { usePlaceSearch } from '@/hooks/use-place-search'
 import type { Place, PlaceKind } from '@/lib/api/client'
 import { cn } from '@/lib/utils'
@@ -20,7 +21,12 @@ interface PlaceFieldProps {
   /** The dot or square drawn to the left, matching the map's start and end markers. */
   marker: ReactNode
   onFocus?: () => void
-  autoFocus?: boolean
+  inputRef?: Ref<HTMLInputElement>
+  /**
+   * Where the suggestions go. By default they drop down under the field; given an element
+   * (the phone's search page), they fill it as a full-width list instead.
+   */
+  listContainer?: HTMLElement | null
 }
 
 /** Bold the part of `text` that matches what was typed, like ride apps do. */
@@ -51,7 +57,8 @@ export function PlaceField({
   onChange,
   marker,
   onFocus,
-  autoFocus,
+  inputRef,
+  listContainer,
 }: PlaceFieldProps) {
   const id = useId()
   const listId = `${id}-suggestions`
@@ -75,6 +82,79 @@ export function PlaceField({
 
   const showList = open && query.trim().length >= 2
   const busy = search.status === 'loading'
+  // In the full-width list, rows are divided by lines and sized for thumbs.
+  const fullWidth = Boolean(listContainer)
+
+  const suggestions = (
+    <>
+      <ul
+        id={listId}
+        role="listbox"
+        aria-label={`${label} suggestions`}
+        className={fullWidth ? undefined : 'py-1'}
+      >
+        {places.map((place, index) => {
+          const Icon = KIND_ICONS[place.kind]
+          return (
+            <li
+              key={place.id}
+              id={`${listId}-${index}`}
+              role="option"
+              aria-selected={index === activeIndex}
+              // mousedown, not click: picking must happen before the input's blur.
+              onMouseDown={(event) => {
+                event.preventDefault()
+                choose(place)
+              }}
+              onMouseMove={() => setActive(index)}
+              className={cn(
+                'flex cursor-pointer items-center gap-3',
+                fullWidth ? 'gap-4 py-1' : 'px-3 py-2.5',
+                index === activeIndex && (fullWidth ? 'bg-muted/60' : 'bg-muted'),
+              )}
+            >
+              <span
+                className={cn(
+                  'grid shrink-0 place-items-center rounded-full bg-muted text-foreground in-aria-selected:bg-background',
+                  fullWidth ? 'size-10' : 'size-9',
+                )}
+              >
+                <Icon className="size-4" aria-hidden />
+              </span>
+              <span className={cn('min-w-0', fullWidth && 'flex-1 border-b py-2.5')}>
+                <span
+                  className={cn(
+                    'block truncate text-foreground/80',
+                    fullWidth ? 'text-base' : 'text-sm',
+                  )}
+                >
+                  <Highlight text={place.name} query={query} />
+                </span>
+                {place.detail && (
+                  <span className="block truncate text-xs text-muted-foreground">
+                    {place.detail}
+                  </span>
+                )}
+              </span>
+            </li>
+          )
+        })}
+      </ul>
+      {search.status === 'done' && places.length === 0 && (
+        <p className="px-4 py-3 text-sm text-muted-foreground">
+          No places found. Try a station, stop or landmark name.
+        </p>
+      )}
+      {search.status === 'error' && (
+        <p role="alert" className="px-4 py-3 text-sm text-destructive">
+          {search.message}
+        </p>
+      )}
+      {busy && places.length === 0 && (
+        <p className="px-4 py-3 text-sm text-muted-foreground">Searching…</p>
+      )}
+    </>
+  )
 
   return (
     <div className="relative">
@@ -91,8 +171,8 @@ export function PlaceField({
         aria-activedescendant={
           showList && places[activeIndex] ? `${listId}-${activeIndex}` : undefined
         }
+        ref={inputRef}
         autoComplete="off"
-        autoFocus={autoFocus}
         spellCheck={false}
         placeholder={placeholder}
         value={text}
@@ -147,60 +227,14 @@ export function PlaceField({
         )
       )}
 
-      {showList && (
-        <div className="absolute inset-x-0 top-full z-30 mt-2 overflow-hidden rounded-xl border bg-popover shadow-xl">
-          <ul id={listId} role="listbox" aria-label={`${label} suggestions`} className="py-1">
-            {places.map((place, index) => {
-              const Icon = KIND_ICONS[place.kind]
-              return (
-                <li
-                  key={place.id}
-                  id={`${listId}-${index}`}
-                  role="option"
-                  aria-selected={index === activeIndex}
-                  // mousedown, not click: picking must happen before the input's blur.
-                  onMouseDown={(event) => {
-                    event.preventDefault()
-                    choose(place)
-                  }}
-                  onMouseMove={() => setActive(index)}
-                  className={cn(
-                    'flex cursor-pointer items-center gap-3 px-3 py-2.5',
-                    index === activeIndex && 'bg-muted',
-                  )}
-                >
-                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-muted text-foreground in-aria-selected:bg-background">
-                    <Icon className="size-4" aria-hidden />
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm text-foreground/80">
-                      <Highlight text={place.name} query={query} />
-                    </span>
-                    {place.detail && (
-                      <span className="block truncate text-xs text-muted-foreground">
-                        {place.detail}
-                      </span>
-                    )}
-                  </span>
-                </li>
-              )
-            })}
-          </ul>
-          {search.status === 'done' && places.length === 0 && (
-            <p className="px-4 py-3 text-sm text-muted-foreground">
-              No places found. Try a station, stop or landmark name.
-            </p>
-          )}
-          {search.status === 'error' && (
-            <p role="alert" className="px-4 py-3 text-sm text-destructive">
-              {search.message}
-            </p>
-          )}
-          {busy && places.length === 0 && (
-            <p className="px-4 py-3 text-sm text-muted-foreground">Searching…</p>
-          )}
-        </div>
-      )}
+      {showList &&
+        (listContainer ? (
+          createPortal(<div className="pb-4">{suggestions}</div>, listContainer)
+        ) : (
+          <div className="absolute inset-x-0 top-full z-30 mt-2 overflow-hidden rounded-xl border bg-popover shadow-xl">
+            {suggestions}
+          </div>
+        ))}
     </div>
   )
 }
