@@ -21,6 +21,7 @@ revisiting before an interview.
 | [0009](0009-hosting.md) | Vercel + managed FastAPI host + managed Postgres | Accepted |
 | [0010](0010-development-workflow.md) | Ownership split, small PRs, restart from scratch | Accepted |
 | [0011](0011-data-sources-and-licensing.md) | Official OTD feeds, raw data kept out of git, NCRTC deferred | Accepted |
+| [0012](0012-bus-feed-cleaning-and-display.md) | Bus feed cleaning (calendar, duplicate stops) and route-code display | Accepted (1 item pending) |
 
 ## Template
 
