@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
+import { SIDE_PANEL_QUERY } from '@/hooks/use-media-query'
 import { setMediaQueries } from '@/test/media'
 import { AppShell } from './app-shell'
 
@@ -10,8 +11,8 @@ vi.mock('@/components/map/map-view', () => ({
 }))
 
 describe('AppShell', () => {
-  it('shows the planner as a side panel on laptops', async () => {
-    setMediaQueries({ '(min-width: 1024px)': true })
+  it('shows the planner as a side panel on tablets and laptops', async () => {
+    setMediaQueries({ [SIDE_PANEL_QUERY]: true })
 
     render(<AppShell />)
 
@@ -20,7 +21,7 @@ describe('AppShell', () => {
     expect(await screen.findByTestId('map')).toBeInTheDocument()
   })
 
-  it('shows the planner as a bottom sheet on phones', async () => {
+  it('shows the planner as a bottom sheet on upright phones', async () => {
     render(<AppShell />)
 
     expect(screen.queryByRole('complementary')).not.toBeInTheDocument()

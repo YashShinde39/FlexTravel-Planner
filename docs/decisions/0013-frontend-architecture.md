@@ -15,9 +15,13 @@ vector maps.
 
 ## Decision
 
-- **Layout: map-first.** A full-screen map. On phones the planner is a non-dismissible
-  bottom sheet with three heights (peek, half, full); on laptops (≥ 1024 px) it is a
-  floating side panel. The map centres on the area the planner doesn't cover.
+- **Layout: map-first.** A full-screen map. On upright phones the planner is a
+  non-dismissible bottom sheet with three heights (peek, half, full); wherever there is
+  room beside the map (≥ 768 px wide, or a phone held sideways, ≥ 560 px) it is a floating
+  side panel, about 40% of the width (320–400 px) and as tall as its contents. The map
+  centres on the area the planner doesn't cover. (Amended 2026-10-24: the panel started at
+  1024 px, which left tablets with a stretched sheet and sideways phones with a sliver
+  of map.)
 - **Map: MapLibre GL + OpenFreeMap.** Open-source vector rendering; free OSM-based tiles
   with no API key. Styles: `positron` (light) and `fiord` (dark). OpenFreeMap's `dark`
   style was rejected because it references a missing texture (black blobs over airports,

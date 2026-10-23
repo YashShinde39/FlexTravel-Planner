@@ -22,7 +22,7 @@ First-time Playwright setup: `npx playwright install chromium`.
 src/
   App.tsx                         entry component
   components/
-    layout/app-shell.tsx          map-first layout: side panel (≥1024 px) or bottom sheet
+    layout/app-shell.tsx          map-first layout: side panel (≥768 px or sideways) or bottom sheet
     layout/planner-sheet.tsx      always-present mobile sheet (vaul), three snap heights
     map/map-view.tsx              MapLibre map, lazy-loaded; styles, NCR bounds, camera
     map/trip-layers.tsx           the selected route: ride lines, walking dots, stops, markers

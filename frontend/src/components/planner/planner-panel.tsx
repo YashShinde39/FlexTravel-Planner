@@ -3,6 +3,7 @@ import { Brand } from '@/components/brand'
 import { OptionList } from '@/components/trip/option-list'
 import { TripDetails } from '@/components/trip/trip-details'
 import type { TripPlanner } from '@/hooks/use-trip-planner'
+import { cn } from '@/lib/utils'
 import { DirectionsBar } from './directions-bar'
 import { TripForm } from './trip-form'
 import { TripSummary } from './trip-summary'
@@ -123,11 +124,15 @@ export function PlannerPanel({
   inlineActions = true,
 }: PlannerPanelProps) {
   const { state, dispatch, selected } = planner
-  const padding = 'px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]'
+  // The side panel (showBrand) has room at the top; the sheet already has its drag handle.
+  const padding = cn(
+    'px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]',
+    showBrand ? 'pt-5' : 'pt-2',
+  )
 
   if (state.view === 'details' && selected) {
     return (
-      <div className={`flex min-h-full flex-col gap-4 pt-2 lg:pt-4 ${padding}`}>
+      <div className={cn('flex min-h-full flex-col gap-4', padding)}>
         <button
           type="button"
           onClick={() => dispatch({ type: 'back' })}
@@ -151,7 +156,7 @@ export function PlannerPanel({
 
   if (state.view === 'options') {
     return (
-      <div className={`flex min-h-full flex-col gap-5 pt-2 lg:pt-5 ${padding}`}>
+      <div className={cn('flex min-h-full flex-col gap-5', padding)}>
         {brand}
         <TripSummary planner={planner} />
         <Results planner={planner} inlineActions={inlineActions} />
@@ -165,7 +170,7 @@ export function PlannerPanel({
   const hasRoutes = state.plan.status === 'ready' && state.origin && state.destination
 
   return (
-    <div className={`flex min-h-full flex-col gap-5 pt-2 lg:pt-5 ${padding}`}>
+    <div className={cn('flex min-h-full flex-col gap-5', padding)}>
       {brand}
       <section aria-labelledby="planner-heading" className="flex flex-col gap-4">
         <h1 id="planner-heading" className="font-heading text-[1.75rem] leading-tight font-bold tracking-tight">

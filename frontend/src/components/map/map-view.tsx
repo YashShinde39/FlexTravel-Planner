@@ -36,7 +36,8 @@ const FIT_MARGIN = 60
 
 interface MapViewProps {
   colorScheme: ColorScheme
-  isDesktop: boolean
+  /** Phones zoom by pinching; mice need buttons. */
+  showZoomButtons: boolean
   /** Screen space covered by the planner, so the map centres on what is still visible. */
   padding: PaddingOptions
   origin: Place | null
@@ -55,7 +56,7 @@ function boundsOf(points: [number, number][]): LngLatBounds | null {
 
 export default function MapView({
   colorScheme,
-  isDesktop,
+  showZoomButtons,
   padding,
   origin,
   destination,
@@ -97,9 +98,9 @@ export default function MapView({
         destination={destination}
         option={option}
       />
-      {/* On phones AppShell lifts the bottom-right controls above the sheet's edge. */}
+      {/* With the bottom sheet, AppShell lifts the bottom-right controls above its edge. */}
       <AttributionControl compact position="bottom-right" />
-      {isDesktop && <NavigationControl position="bottom-right" showCompass={false} />}
+      {showZoomButtons && <NavigationControl position="bottom-right" showCompass={false} />}
       <GeolocateControl position="bottom-right" positionOptions={{ enableHighAccuracy: true }} />
     </Map>
   )

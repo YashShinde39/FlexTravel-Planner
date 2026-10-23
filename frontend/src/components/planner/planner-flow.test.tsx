@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { AppShell } from '@/components/layout/app-shell'
 import { json, mockApi } from '@/test/api-mock'
+import { SIDE_PANEL_QUERY } from '@/hooks/use-media-query'
 import { setMediaQueries } from '@/test/media'
 
 // jsdom has no WebGL, so the real map can't render here; Playwright covers it in a browser.
@@ -19,7 +20,7 @@ async function chooseTrip(user: ReturnType<typeof userEvent.setup>) {
 
 describe('planning a trip', () => {
   it('suggests places while typing, then lists options and shows directions', async () => {
-    setMediaQueries({ '(min-width: 1024px)': true })
+    setMediaQueries({ [SIDE_PANEL_QUERY]: true })
     const fetchMock = mockApi()
     const user = userEvent.setup()
     render(<AppShell />)
@@ -51,7 +52,7 @@ describe('planning a trip', () => {
   })
 
   it("says so when the route planner isn't available", async () => {
-    setMediaQueries({ '(min-width: 1024px)': true })
+    setMediaQueries({ [SIDE_PANEL_QUERY]: true })
     mockApi(() =>
       json({ detail: "The route planner isn't available right now. Please try again shortly." }, 503),
     )

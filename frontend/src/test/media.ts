@@ -2,7 +2,7 @@ import { vi } from 'vitest'
 
 /**
  * jsdom has no matchMedia. This stub answers queries from a table that tests set, e.g.
- * `setMediaQueries({ '(min-width: 1024px)': true })`; unlisted queries don't match.
+ * `setMediaQueries({ [SIDE_PANEL_QUERY]: true })`; unlisted queries don't match.
  */
 let matches: Record<string, boolean> = {}
 

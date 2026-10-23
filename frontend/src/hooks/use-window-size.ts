@@ -5,6 +5,11 @@ function subscribe(onChange: () => void) {
   return () => window.removeEventListener('resize', onChange)
 }
 
+/** The viewport's width in pixels, updated on resize (e.g. a phone rotating). */
+export function useWindowWidth(): number {
+  return useSyncExternalStore(subscribe, () => window.innerWidth)
+}
+
 /** The viewport's height in pixels, updated on resize (e.g. a phone rotating). */
 export function useWindowHeight(): number {
   return useSyncExternalStore(subscribe, () => window.innerHeight)

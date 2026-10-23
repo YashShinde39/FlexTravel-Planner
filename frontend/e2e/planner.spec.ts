@@ -44,3 +44,50 @@ test('plans a trip from suggestions to directions', async ({ page }) => {
   await page.waitForTimeout(2000)
   expect(errors).toEqual([])
 })
+
+// The planner is a side panel where there's room beside the map and a bottom sheet on upright
+// phones; either way it has to fit the screen it's on.
+const SCREENS = [
+  { name: 'a small phone', viewport: { width: 320, height: 568 }, panel: false },
+  { name: 'a phone held sideways', viewport: { width: 844, height: 390 }, panel: true },
+  { name: 'a tablet', viewport: { width: 768, height: 1024 }, panel: true },
+  { name: 'a big monitor', viewport: { width: 2560, height: 1440 }, panel: true },
+]
+
+for (const screen of SCREENS) {
+  test.describe(`on ${screen.name}`, () => {
+    test.use({ viewport: screen.viewport })
+
+    test('fits the planner on screen', async ({ page }) => {
+      test.skip(test.info().project.name !== 'desktop', 'sets its own screen size')
+      await mockApi(page)
+      await page.goto('/')
+      const { width, height } = screen.viewport
+      // Polled, because the sheet slides into place.
+      const within = (locator: ReturnType<Page['locator']>) =>
+        expect
+          .poll(async () => {
+            const box = await locator.boundingBox()
+            return box && box.x >= 0 && box.x + box.width <= width && box.y + box.height <= height
+          })
+          .toBe(true)
+
+      await expect(page.getByRole('complementary', { name: 'Trip planner' })).toHaveCount(
+        screen.panel ? 1 : 0,
+      )
+      // Both fields show without scrolling or dragging the sheet up.
+      await within(page.getByRole('combobox', { name: 'From' }))
+      await within(page.getByRole('combobox', { name: 'To' }))
+
+      await page.getByRole('combobox', { name: 'From' }).fill('kashmere')
+      await page.getByRole('option', { name: /Kashmere Gate\s*Metro station/ }).click()
+      await page.getByRole('combobox', { name: 'To' }).fill('india gate')
+      await page.getByRole('option', { name: /^India Gate\s*Bus stop/ }).click()
+
+      // The chosen option's Directions button is reachable without scrolling.
+      const directions = page.getByRole('button', { name: /^Directions/ }).first()
+      await within(directions)
+      expect(await page.evaluate('document.documentElement.scrollWidth')).toBe(width)
+    })
+  })
+}
