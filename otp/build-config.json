@@ -1,0 +1,8 @@
+{
+  "transitServiceStart": "-P1W",
+  "transitServiceEnd": "P1Y",
+  "transitFeeds": [
+    { "type": "gtfs", "source": "dtc-bus.gtfs.zip", "feedId": "dtc" }
+  ],
+  "osm": [{ "source": "delhi-ncr.osm.pbf" }]
+}

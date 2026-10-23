@@ -1,12 +1,16 @@
 # FlexTravel Planner — developer shortcuts
 # Usage: make <target>. Requires Docker (e.g. OrbStack), uv and Node.js.
 
-.PHONY: install dev dev-api dev-web db-up db-down db-reset migrate test test-web e2e lint format
+.PHONY: install data dev dev-api dev-web db-up db-down db-reset migrate test test-web e2e lint format
 
 ## Install backend and frontend dependencies
 install:
 	cd backend && uv sync
 	cd frontend && npm ci --no-fund --no-audit
+
+## Prepare map, bus and station data and build the route planner's graph (~2 min)
+data:
+	@scripts/prepare_data.sh
 
 ## Start everything (database, API, web app) in one terminal; Ctrl+C stops it
 dev:
@@ -24,7 +28,7 @@ dev-web:
 db-up:
 	docker compose up -d --wait db
 
-## Stop the database (data is kept in a Docker volume)
+## Stop the database and route planner (data is kept in a Docker volume)
 db-down:
 	docker compose down
 

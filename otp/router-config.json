@@ -1,0 +1,8 @@
+{
+  "server": { "apiProcessingTimeout": "10s" },
+  "routingDefaults": {
+    "transferSlack": "5m",
+    "numItineraries": 6,
+    "searchWindow": "1h"
+  }
+}
