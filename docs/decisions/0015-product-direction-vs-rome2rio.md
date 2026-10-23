@@ -94,8 +94,9 @@ step-free station information all build on it.
   Rome2rio's. Open transit data exists for only a few cities.
 - **Waiting for the official Metro feed.** The most accurate, but there is no date for
   it.
-- **The 2018 Metro feed on Codeberg.** A real DMRC timetable, but eight years old and
-  missing newer lines and stations.
+- **The 2018 Metro feed on Codeberg.** On inspection it isn't a real timetable: it has
+  only the Yellow Line, with a flat 2 minutes between every pair of stations and a train
+  every 5 minutes all day.
 - **User accounts for saved trips.** These would sync across devices, but they need
   authentication, a users table and a privacy policy.
 - **Live buses first.** This is blocked on the data portal being reachable.
