@@ -68,8 +68,9 @@ Recorded in [ADR-0012](../decisions/0012-bus-feed-cleaning-and-display.md):
 2. **Repeated consecutive stops:** collapse them. Investigation ruled out loops (identical
    times, adjacent sequence numbers, no turnaround pattern). The 2,293 trips with genuine
    revisits are kept.
-3. **Same-spot stops:** pending the owner's map review
-   (`scripts/list_same_spot_stops.py`).
+3. **Same-spot stops:** one place with several names → merge under the feed name that
+   matches Google Maps (reference only), else the OSM name. Different places on one point
+   → coordinates corrected from OSM via owner-reviewed proposals, or flagged.
 4. **Route codes:** shown as printed on the bus, explained only where verified against the
    data (STL and A/B/C confirmed; EXT contradicted).
 5. **Bus transfer buffer:** decided in the transfer-linking stage.
