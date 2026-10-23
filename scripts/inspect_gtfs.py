@@ -17,6 +17,7 @@ The report contains statistics and small samples only, never the feed files them
 from __future__ import annotations
 
 import argparse
+import hashlib
 import zipfile
 from dataclasses import dataclass
 from datetime import date
@@ -101,9 +102,12 @@ def pct(part: float, whole: float) -> str:
 
 def inventory(feed: Feed) -> str:
     size_mb = feed.path.stat().st_size / 1e6
+    # The checksum proves which exact file a report describes, since feeds aren't committed.
+    sha256 = hashlib.sha256(feed.path.read_bytes()).hexdigest()
     rows = [[f, f"{len(df):,}", ", ".join(df.columns)] for f, df in sorted(feed.tables.items())]
     missing = [f for f in OPTIONAL_FILES + FARE_FILES if f not in feed.tables]
-    return (f"Zip size: {size_mb:.1f} MB\n\n" + table(["File", "Rows", "Columns"], rows)
+    return (f"Zip size: {size_mb:.1f} MB · SHA-256 `{sha256}`\n\n"
+            + table(["File", "Rows", "Columns"], rows)
             + f"\n\nNot present: {', '.join(missing) or 'none'}")
 
 
@@ -220,7 +224,9 @@ def stop_times(feed: Feed) -> str:
         "secs": nxt["arr"] - frame["dep"],
         "metres": haversine_m(frame["stop_lat"], frame["stop_lon"],
                               nxt["stop_lat"], nxt["stop_lon"]),
+        "repeat": frame["stop"] == nxt["stop"],
     }).dropna()
+    zero = hops[hops["secs"] <= 0]
     moving = hops[hops["secs"] > 0]
     kmh = moving["metres"] / moving["secs"] * 3.6
     # A coefficient of variation near 0 means every hop in a trip has the same speed,
@@ -235,7 +241,9 @@ def stop_times(feed: Feed) -> str:
         ["Blank arrival/departure times", pct(int((frame["arr"].isna() | frame["dep"].isna()).sum()), len(frame))],
         ["Times at or after 24:00 (overnight)", pct(int((frame["dep"] >= 86_400).sum()), len(frame))],
         ["Dwell (departure later than arrival)", pct(int((frame["dep"] > frame["arr"]).sum()), len(frame))],
-        ["Hops with zero or negative travel time", pct(int((hops["secs"] <= 0).sum()), len(hops))],
+        ["Hops with zero or negative travel time", pct(len(zero), len(hops))],
+        ["  … between identical coordinates", pct(int((zero["metres"] == 0).sum()), len(zero))],
+        ["  … same stop listed twice in a row", pct(int(zero["repeat"].sum()), len(zero))],
         ["Hop speed km/h (p5 / median / p95)",
          f"{kmh.quantile(.05):.1f} / {kmh.median():.1f} / {kmh.quantile(.95):.1f}"],
         ["Hops faster than 100 km/h", pct(int((kmh > 100).sum()), len(kmh))],

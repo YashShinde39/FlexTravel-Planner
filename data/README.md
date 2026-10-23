@@ -17,8 +17,23 @@ Downloading means accepting the portal's [terms](https://otd.delhi.gov.in/terms)
 The form asks for a usage type, a purpose and your name. For this project that is
 **Non-Commercial**, with purpose **Academia** (or **Other**: personal portfolio project).
 
-Note the date you downloaded each file. The inspection report records file sizes so
-changes between downloads are visible.
+Note the date you downloaded each file. The inspection report records each file's size
+and SHA-256, so changes between downloads are visible.
+
+### Interim source (portal download broken)
+
+As of 2026-10-23 the portal's file server is unreachable. Until it is fixed, use the
+public mirror of the bus feed (official data, last refreshed February 2023):
+
+```bash
+mkdir -p data/raw
+curl -L -o data/raw/dtc-bus-mirror-2023.zip \
+  https://files.mobilitydatabase.org/mdb-3139/mdb-3139-202605111616/mdb-3139-202605111616.zip
+shasum -a 256 data/raw/dtc-bus-mirror-2023.zip
+# expect f5a8e196847c3c02da40578a05fcb764157e105f4f39ae628912673588ddcbe0
+```
+
+No metro mirror is available.
 
 ## Inspect
 
