@@ -1,6 +1,6 @@
 # ADR-0011: Data sources and licensing
 
-- Status: Accepted
+- Status: Accepted (Namo Bharat brought forward by ADR-0015; map extract amended by ADR-0016)
 - Date: 2026-10-23
 
 ## Context

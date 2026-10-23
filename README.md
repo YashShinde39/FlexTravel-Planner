@@ -23,7 +23,7 @@ and Node.js 20.19+.
 
 ```bash
 make install   # backend and frontend dependencies
-make data      # first time only: map, bus and station data + route planner graph (~2 min)
+make data      # first time only: map, bus, Metro and station data + route planner graph (~2 min)
 make dev       # database + route planner + API + web app; Ctrl+C stops them
 ```
 

@@ -20,11 +20,12 @@ revisiting before an interview.
 | [0008](0008-locations-and-landmarks.md) | Stop/landmark search, map pins, Nominatim; landmarks from OSM | Accepted (map part superseded by 0013, geocoder by 0014) |
 | [0009](0009-hosting.md) | Vercel + managed FastAPI host + managed Postgres | Accepted |
 | [0010](0010-development-workflow.md) | Ownership split, small PRs, restart from scratch | Accepted |
-| [0011](0011-data-sources-and-licensing.md) | Official OTD feeds, raw data kept out of git, NCRTC deferred | Accepted (NCRTC brought forward by 0015) |
+| [0011](0011-data-sources-and-licensing.md) | Official OTD feeds, raw data kept out of git, NCRTC deferred | Accepted (NCRTC brought forward by 0015; map extract amended by 0016) |
 | [0012](0012-bus-feed-cleaning-and-display.md) | Bus feed cleaning (calendar, duplicate stops, same-spot stops) and route-code display | Accepted |
 | [0013](0013-frontend-architecture.md) | Map-first frontend: MapLibre + OpenFreeMap, shadcn/ui, dark mode, contract-first API | Accepted |
-| [0014](0014-interim-routing-engine.md) | OpenTripPlanner as the interim routing engine, behind our own interface; Photon for search | Accepted |
+| [0014](0014-interim-routing-engine.md) | OpenTripPlanner as the interim routing engine, behind our own interface; Photon for search | Accepted (bus buffer amended by 0016) |
 | [0015](0015-product-direction-vs-rome2rio.md) | Beat Rome2rio on Delhi NCR in depth: Metro first, trust labels, more local modes, saved trips without login | Accepted |
+| [0016](0016-generated-metro-timetable.md) | Metro timetable generated from OpenStreetMap and published frequencies; interchanges as walkways | Accepted |
 
 ## Template
 
