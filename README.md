@@ -12,7 +12,15 @@ first and last mile.
 - [Architecture decision records](docs/decisions/README.md): what was decided, the
   alternatives, and why.
 - Routing: RAPTOR, extended to McRAPTOR ([ADR-0003](docs/decisions/0003-routing-algorithm.md)).
-- Stack: FastAPI, PostgreSQL + PostGIS, React + TypeScript.
+- Stack: FastAPI, PostgreSQL + PostGIS, React + TypeScript, MapLibre ([ADR-0013](docs/decisions/0013-frontend-architecture.md)).
+
+## Frontend
+
+```bash
+cd frontend && npm install && npm run dev   # http://localhost:5173
+```
+
+Details in [frontend/README.md](frontend/README.md).
 
 ## Data
 

@@ -17,11 +17,12 @@ revisiting before an interview.
 | [0005](0005-database.md) | PostgreSQL + PostGIS | Accepted |
 | [0006](0006-fares.md) | Fares from feed data, with official fare tables as fallback | Accepted |
 | [0007](0007-unreliable-bus-times.md) | Transfer buffers and "approximate" labels for bus times | Accepted |
-| [0008](0008-locations-and-landmarks.md) | Stop/landmark search, map pins, Nominatim; landmarks from OSM | Accepted |
+| [0008](0008-locations-and-landmarks.md) | Stop/landmark search, map pins, Nominatim; landmarks from OSM | Accepted (map part superseded by 0013) |
 | [0009](0009-hosting.md) | Vercel + managed FastAPI host + managed Postgres | Accepted |
 | [0010](0010-development-workflow.md) | Ownership split, small PRs, restart from scratch | Accepted |
 | [0011](0011-data-sources-and-licensing.md) | Official OTD feeds, raw data kept out of git, NCRTC deferred | Accepted |
 | [0012](0012-bus-feed-cleaning-and-display.md) | Bus feed cleaning (calendar, duplicate stops, same-spot stops) and route-code display | Accepted |
+| [0013](0013-frontend-architecture.md) | Map-first frontend: MapLibre + OpenFreeMap, shadcn/ui, dark mode, contract-first API | Accepted |
 
 ## Template
 
