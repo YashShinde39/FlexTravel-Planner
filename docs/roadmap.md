@@ -3,6 +3,10 @@
 Milestones are delivered as small PRs (ADR-0010). There is no fixed deadline; each
 milestone ships something that works before the next one starts.
 
+**Change (October 2026):** the frontend was moved ahead of the import and RAPTOR
+(ADR-0013). It is built against a contract-first stub API: A shell → B API contract →
+C trip search → D results. Data and routing work continue afterwards in the original order.
+
 ## M1: Delhi data
 
 1. **Feed inspection.** Download the DTC bus and Delhi Metro feeds (ADR-0011) and write a
