@@ -1,0 +1,39 @@
+name: backend
+
+on:
+  push:
+    branches: [main]
+    paths: ["backend/**", ".github/workflows/backend.yml"]
+  pull_request:
+    paths: ["backend/**", ".github/workflows/backend.yml"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      db:
+        # Same image as docker-compose.yml, so CI and local databases match.
+        image: postgis/postgis:17-3.5
+        env:
+          POSTGRES_USER: flextravel
+          POSTGRES_PASSWORD: flextravel
+          POSTGRES_DB: flextravel_test
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -h 127.0.0.1 -U flextravel -d flextravel_test"
+          --health-interval 2s --health-timeout 5s --health-retries 30
+    env:
+      FLEXTRAVEL_TEST_DATABASE_URL: postgresql+asyncpg://flextravel:flextravel@localhost:5433/flextravel_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Install dependencies (exactly as locked)
+        run: uv sync --locked
+      - name: Lint
+        run: uv run ruff check . && uv run ruff format --check .
+      - name: Test
+        run: uv run pytest
