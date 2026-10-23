@@ -9,7 +9,7 @@ test('planner and map load without errors', async ({ page }) => {
   await page.goto('/')
 
   await expect(page.getByRole('heading', { name: 'Where to?' })).toBeVisible()
-  await expect(page.getByPlaceholder(/^From/)).toBeVisible()
+  await expect(page.getByRole('combobox', { name: 'From' })).toBeVisible()
   await expect(page.locator('canvas.maplibregl-canvas')).toBeVisible()
   // Give the map time to fetch and decode its first tiles.
   await page.waitForTimeout(3000)
