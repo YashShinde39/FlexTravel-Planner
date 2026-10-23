@@ -1,6 +1,6 @@
 # ADR-0012: Bus feed cleaning and route display rules
 
-- Status: Accepted (one item pending, see 3)
+- Status: Accepted
 - Date: 2026-10-23
 
 ## Context
@@ -42,9 +42,23 @@ The feed inspection ([findings](../data/findings.md)) of the DTC/DIMTS bus feed
    arrival, last departure) and log the count. **Non-consecutive revisits (loops) are
    kept.** RAPTOR must therefore identify stops by their position within a route, not
    only by stop ID.
-3. **Same-spot stops with different names:** *pending.* The owner will inspect a sample
-   on a map and decide between merging, or keeping them separate with a zero-length
-   transfer. Recorded here when decided.
+3. **Same-spot stops with different names** (resolved 2026-10-23 after the owner reviewed
+   a 20-group sample on a map). The sample showed two different situations, handled
+   separately:
+   - **One place, several names** (e.g. "IGI Terminal 3" / "IGI Airport Terminal 3"):
+     merge into one stop. Its name is whichever of the *feed's own* names matches what
+     Google Maps shows. Google Maps is used only as a human reference, never copied,
+     because its terms forbid extracting its content. If none of the feed's names fits,
+     use the OpenStreetMap name (ODbL, attributed).
+   - **Different places on one point** (e.g. seven stops from "Goela Dairy" to
+     "Police Check Post (Chhawla Kakrola Nalah)" sharing one coordinate): the coordinates
+     are wrong, so renaming cannot help. A script proposes corrected coordinates by matching
+     stop names to nearby OpenStreetMap bus stops and named places. The owner reviews the
+     proposals before they are applied. Stops without a confident match are flagged as
+     having unreliable locations and excluded from walking-transfer links.
+
+   Telling the two situations apart (e.g. by name similarity within a group) is part of
+   the script, and its classifications are reviewed by the owner too.
 4. **Route display:** show the route code **as printed on the bus** (e.g. "764 STL",
    towards the final stop), because that is what a visitor must match at the stop. Add
    explanations only for codes verified against data (STL, A/B/C). Unknown or contradicted
@@ -66,13 +80,18 @@ The feed inspection ([findings](../data/findings.md)) of the DTC/DIMTS bus feed
 - RAPTOR test cases must include a route that visits the same stop twice.
 - Route-code explanations live in a small, reviewed lookup table, extendable as
   meanings are confirmed (e.g. from a DTC source or the Transport Department).
+- Stop corrections (merges, renames, new coordinates) are stored as a reviewed overrides
+  file applied during import, so every change to the published data is explicit,
+  attributable and re-applicable to a fresh feed download.
+- Using OpenStreetMap data adds ODbL attribution obligations (shared with ADR-0008).
 
 ## Why (in my words)
 
-> _To fill in: why collapse duplicates but keep loops? Why show codes you don't fully understand?_
+> _To fill in: why collapse duplicates but keep loops? Why show codes you don't fully understand? Why not just copy names from Google Maps?_
 
 ## Questions an interviewer might ask
 
 - How did you tell a data artifact apart from a real loop?
 - You found a published definition that contradicted your data. What did you do?
 - Why does a repeated stop break naive RAPTOR implementations?
+- Google Maps has better names. Why didn't you use them?
