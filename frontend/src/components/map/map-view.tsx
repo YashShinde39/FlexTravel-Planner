@@ -29,7 +29,7 @@ const MAP_STYLES: Record<ColorScheme, string> = {
 const DELHI = { longitude: 77.209, latitude: 28.6139, zoom: 10.5 }
 
 // Roughly Delhi NCR (west, south, east, north): keeps the camera where the planner has data.
-const NCR_BOUNDS: [number, number, number, number] = [76.6, 28.15, 77.75, 29.0]
+const NCR_BOUNDS: [number, number, number, number] = [76.6, 28.15, 77.8, 29.12]
 
 // OpenStreetMap's attribution guidelines allow collapsing the map's credit after five
 // seconds, as long as the (i) button still shows it. Left open, it covers much of a phone's map.

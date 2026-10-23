@@ -26,7 +26,7 @@ MAX_LOCAL = 6
 # "hauz khas" -> Hauz Rani, 0.5).
 STRONG_SIMILARITY = 0.6
 # Delhi NCR (west, south, east, north), the same box as the map and the OSM extract.
-NCR_BBOX = "76.6,28.15,77.75,29.0"
+NCR_BBOX = "76.6,28.15,77.8,29.12"
 DELHI_CENTRE = {"lat": 28.6139, "lon": 77.209}
 
 
