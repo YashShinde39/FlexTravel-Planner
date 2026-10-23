@@ -4,6 +4,7 @@ import type { Leg, TripOption } from '@/lib/api/client'
 import { formatDuration, formatFare, formatTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { ModeIcon } from './mode-icon'
+import { RouteBadge } from './route-badge'
 
 const LABELS: Record<TripOption['labels'][number], string> = {
   fastest: 'Fastest',
@@ -20,10 +21,7 @@ export function LegChain({ legs }: { legs: Leg[] }) {
         <Fragment key={index}>
           {index > 0 && <ChevronRight className="size-3 text-muted-foreground" aria-hidden />}
           {leg.route ? (
-            <span className="inline-flex items-center gap-1 rounded-md bg-foreground px-1.5 py-0.5 text-xs font-semibold text-background">
-              <ModeIcon mode={leg.mode} className="size-3" />
-              {leg.route.code}
-            </span>
+            <RouteBadge leg={leg} className="px-1.5 py-0.5 text-xs" />
           ) : (
             <span className="inline-flex items-center gap-0.5 text-xs text-muted-foreground">
               <ModeIcon mode={leg.mode} className="size-3.5" />

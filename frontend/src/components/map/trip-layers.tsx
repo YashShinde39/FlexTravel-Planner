@@ -5,6 +5,7 @@ import type { Place, TripOption } from '@/lib/api/client'
 import { tripFeatures } from './trip-features'
 
 // Uber-style monochrome: the route in the text colour, outlined in the background colour.
+// Metro lines keep their own colour, as on station maps.
 const INK: Record<ColorScheme, string> = { light: '#000000', dark: '#ffffff' }
 const PAPER: Record<ColorScheme, string> = { light: '#ffffff', dark: '#000000' }
 
@@ -56,7 +57,7 @@ export function TripLayers({ colorScheme, origin, destination, option }: TripLay
           type="line"
           filter={isRide as never}
           layout={{ 'line-cap': 'round', 'line-join': 'round' }}
-          paint={{ 'line-color': ink, 'line-width': 5 }}
+          paint={{ 'line-color': ['coalesce', ['get', 'color'], ink], 'line-width': 5 }}
         />
         <Layer
           id="trip-walk"

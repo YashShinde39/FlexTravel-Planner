@@ -1,5 +1,6 @@
 import type { FeatureCollection } from 'geojson'
 import type { TripOption } from '@/lib/api/client'
+import { lineColor } from '@/lib/modes'
 
 /** The selected option as GeoJSON: one line per leg, plus the stops it boards and passes. */
 export function tripFeatures(option: TripOption | null): FeatureCollection {
@@ -9,7 +10,8 @@ export function tripFeatures(option: TripOption | null): FeatureCollection {
     features: option.legs.flatMap((leg) => {
       const line = {
         type: 'Feature' as const,
-        properties: { mode: leg.mode },
+        // A Metro line is drawn in its colour; null falls back to the monochrome route.
+        properties: { mode: leg.mode, color: lineColor(leg) ?? null },
         geometry: { type: 'LineString' as const, coordinates: leg.geometry },
       }
       if (leg.mode === 'walk' || !leg.route) return [line]
