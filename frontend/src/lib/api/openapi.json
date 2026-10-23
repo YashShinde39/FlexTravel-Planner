@@ -1,0 +1,645 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FlexTravel Planner API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Health",
+        "description": "Liveness plus dependency status: is the database reachable, and is PostGIS installed?",
+        "operationId": "health_api_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "type": "object",
+                  "title": "Response Health Api Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/places": {
+      "get": {
+        "tags": [
+          "places"
+        ],
+        "summary": "Search Places",
+        "description": "Suggestions for the From/To fields: stations and stops, then landmarks and addresses.",
+        "operationId": "search_places_api_v1_places_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 100,
+              "title": "Q"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlaceSearchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trips/plan": {
+      "post": {
+        "tags": [
+          "trips"
+        ],
+        "summary": "Plan",
+        "description": "Route options between two places: public transport, auto, cab and walking.",
+        "operationId": "plan_api_v1_trips_plan_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Fare": {
+        "properties": {
+          "min": {
+            "type": "integer",
+            "title": "Min"
+          },
+          "max": {
+            "type": "integer",
+            "title": "Max"
+          },
+          "currency": {
+            "type": "string",
+            "const": "INR",
+            "title": "Currency",
+            "default": "INR"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "min",
+          "max"
+        ],
+        "title": "Fare",
+        "description": "A fare range in rupees: buses differ for AC and non-AC, cabs vary with demand."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Leg": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "walk",
+              "bus",
+              "metro",
+              "rail",
+              "auto",
+              "cab"
+            ],
+            "title": "Mode"
+          },
+          "start": {
+            "$ref": "#/components/schemas/Stop"
+          },
+          "end": {
+            "$ref": "#/components/schemas/Stop"
+          },
+          "departure": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Departure"
+          },
+          "arrival": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Arrival"
+          },
+          "duration_s": {
+            "type": "integer",
+            "title": "Duration S"
+          },
+          "distance_m": {
+            "type": "integer",
+            "title": "Distance M"
+          },
+          "route": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Route"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "headsign": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Headsign"
+          },
+          "intermediate_stops": {
+            "items": {
+              "$ref": "#/components/schemas/Stop"
+            },
+            "type": "array",
+            "title": "Intermediate Stops",
+            "default": []
+          },
+          "geometry": {
+            "items": {
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array",
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "type": "array",
+            "title": "Geometry"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/Step"
+            },
+            "type": "array",
+            "title": "Steps",
+            "default": []
+          },
+          "times_estimated": {
+            "type": "boolean",
+            "title": "Times Estimated",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode",
+          "start",
+          "end",
+          "departure",
+          "arrival",
+          "duration_s",
+          "distance_m",
+          "geometry"
+        ],
+        "title": "Leg"
+      },
+      "Location": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Name"
+          },
+          "lat": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Lat"
+          },
+          "lon": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Lon"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "lat",
+          "lon"
+        ],
+        "title": "Location"
+      },
+      "Place": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "metro_station",
+              "rail_station",
+              "bus_stop",
+              "landmark",
+              "address"
+            ],
+            "title": "Kind"
+          },
+          "lat": {
+            "type": "number",
+            "title": "Lat"
+          },
+          "lon": {
+            "type": "number",
+            "title": "Lon"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "detail",
+          "kind",
+          "lat",
+          "lon"
+        ],
+        "title": "Place"
+      },
+      "PlaceSearchResponse": {
+        "properties": {
+          "places": {
+            "items": {
+              "$ref": "#/components/schemas/Place"
+            },
+            "type": "array",
+            "title": "Places"
+          }
+        },
+        "type": "object",
+        "required": [
+          "places"
+        ],
+        "title": "PlaceSearchResponse"
+      },
+      "PlanRequest": {
+        "properties": {
+          "origin": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "destination": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "depart_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Depart At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "origin",
+          "destination"
+        ],
+        "title": "PlanRequest"
+      },
+      "PlanResponse": {
+        "properties": {
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/TripOption"
+            },
+            "type": "array",
+            "title": "Options"
+          },
+          "notices": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notices",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "options"
+        ],
+        "title": "PlanResponse"
+      },
+      "Route": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "agency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agency"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "title": "Route"
+      },
+      "Step": {
+        "properties": {
+          "instruction": {
+            "type": "string",
+            "title": "Instruction"
+          },
+          "distance_m": {
+            "type": "integer",
+            "title": "Distance M"
+          }
+        },
+        "type": "object",
+        "required": [
+          "instruction",
+          "distance_m"
+        ],
+        "title": "Step",
+        "description": "One turn-by-turn instruction on a walk, e.g. \"Turn left onto Mori Gate Road\"."
+      },
+      "Stop": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "lat": {
+            "type": "number",
+            "title": "Lat"
+          },
+          "lon": {
+            "type": "number",
+            "title": "Lon"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "lat",
+          "lon"
+        ],
+        "title": "Stop"
+      },
+      "TripOption": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "transit",
+              "auto",
+              "cab",
+              "walk"
+            ],
+            "title": "Kind"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "departure": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Departure"
+          },
+          "arrival": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Arrival"
+          },
+          "duration_s": {
+            "type": "integer",
+            "title": "Duration S"
+          },
+          "transfers": {
+            "type": "integer",
+            "title": "Transfers"
+          },
+          "walk_m": {
+            "type": "integer",
+            "title": "Walk M"
+          },
+          "fare": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Fare"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "labels": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "fastest",
+                "cheapest",
+                "fewest_changes",
+                "least_walking"
+              ]
+            },
+            "type": "array",
+            "title": "Labels",
+            "default": []
+          },
+          "legs": {
+            "items": {
+              "$ref": "#/components/schemas/Leg"
+            },
+            "type": "array",
+            "title": "Legs"
+          },
+          "later_departures": {
+            "items": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "type": "array",
+            "title": "Later Departures",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "title",
+          "departure",
+          "arrival",
+          "duration_s",
+          "transfers",
+          "walk_m",
+          "fare",
+          "legs"
+        ],
+        "title": "TripOption"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 # FlexTravel Planner — developer shortcuts
 # Usage: make <target>. Requires Docker (e.g. OrbStack), uv and Node.js.
 
-.PHONY: install data dev dev-api dev-web db-up db-down db-reset migrate test test-web e2e lint format
+.PHONY: install data api-types dev dev-api dev-web db-up db-down db-reset migrate test test-web e2e lint format
 
 ## Install backend and frontend dependencies
 install:
@@ -11,6 +11,13 @@ install:
 ## Prepare map, bus and station data and build the route planner's graph (~2 min)
 data:
 	@scripts/prepare_data.sh
+
+## Regenerate the frontend's API types from the backend's OpenAPI schema
+api-types:
+	cd backend && uv run python -c "import json; from app.main import create_app; \
+		print(json.dumps(create_app().openapi(), indent=2))" > ../frontend/src/lib/api/openapi.json
+	cd frontend && npx --yes openapi-typescript@7.13.0 src/lib/api/openapi.json \
+		-o src/lib/api/schema.d.ts
 
 ## Start everything (database, API, web app) in one terminal; Ctrl+C stops it
 dev:

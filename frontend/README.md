@@ -24,17 +24,30 @@ src/
   components/
     layout/app-shell.tsx          map-first layout: side panel (≥1024 px) or bottom sheet
     layout/planner-sheet.tsx      always-present mobile sheet (vaul), three snap heights
-    map/map-view.tsx              MapLibre map, lazy-loaded; styles and NCR bounds
-    planner/planner-panel.tsx     planner contents shared by sheet and side panel
+    map/map-view.tsx              MapLibre map, lazy-loaded; styles, NCR bounds, camera
+    map/trip-layers.tsx           the selected route: ride lines, walking dots, stops, markers
+    planner/planner-panel.tsx     planner views: trip form, route options, directions
+    planner/place-field.tsx       From/To combobox with type-ahead suggestions
+    trip/option-list.tsx          route options, ride-app style
+    trip/trip-details.tsx         step-by-step timeline for one option
     brand.tsx                     logo + name
     ui/                           shadcn/ui components (generated, then owned)
-  hooks/                          media queries, light/dark scheme
-  test/                           test setup and jsdom stubs
+  hooks/use-trip-planner.ts       planner state (reducer) and automatic planning
+  hooks/use-place-search.ts       debounced, cancellable place search
+  lib/api/                        API client; schema.d.ts is generated (make api-types)
+  test/                           test setup, jsdom stubs, recorded API fixtures
 e2e/                              Playwright specs
 ```
 
 ## Notes
 
+- **API types are generated** from the backend's OpenAPI schema: run `make api-types`
+  from the repository root after changing the API, and commit both files in `src/lib/api/`.
+- **Tests don't need the backend.** Unit and browser tests answer API calls from recorded
+  responses in `src/test/fixtures/`.
+- **Look:** monochrome, ride-app inspired (Uber). Black is the only accent; green marks
+  "Fastest"/"Cheapest". The route is drawn in the text colour with a background-coloured
+  casing, so it reads on both light and dark maps.
 - **Dark mode** follows the device. `index.html` sets the `dark` class before first paint
   to avoid a white flash; `useColorScheme` keeps it in sync.
 - **The map is lazy-loaded** (about 300 KB gzipped) so the planner is usable first on slow
