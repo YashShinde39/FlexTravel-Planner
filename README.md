@@ -14,6 +14,15 @@ first and last mile.
 - Routing: RAPTOR, extended to McRAPTOR ([ADR-0003](docs/decisions/0003-routing-algorithm.md)).
 - Stack: FastAPI, PostgreSQL + PostGIS, React + TypeScript.
 
+## Development
+
+```bash
+make db-up && make migrate && make dev   # API on http://127.0.0.1:8000/docs
+make test
+```
+
+Details in [backend/README.md](backend/README.md).
+
 ## Data
 
 Transit data: Open Transit Data, Department of Transport, Government of NCT of Delhi

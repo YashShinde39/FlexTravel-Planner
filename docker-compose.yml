@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgis/postgis:17-3.5
+    # The official PostGIS image is amd64-only; Apple Silicon runs it under emulation.
+    # Using the same image as CI keeps local and CI databases identical.
+    platform: linux/amd64
+    environment:
+      POSTGRES_USER: flextravel
+      POSTGRES_PASSWORD: flextravel
+      POSTGRES_DB: flextravel
+    ports:
+      - "5433:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      # Runs once, on first start, after the image's own PostGIS setup script.
+      - ./backend/docker/create-test-db.sql:/docker-entrypoint-initdb.d/20-create-test-db.sql:ro
+    healthcheck:
+      # Check over TCP: during first-start setup Postgres runs a temporary socket-only
+      # server, which a socket check would wrongly report as ready.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U flextravel -d flextravel"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  db-data:
