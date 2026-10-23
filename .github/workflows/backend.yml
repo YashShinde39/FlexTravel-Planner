@@ -30,7 +30,7 @@ jobs:
       FLEXTRAVEL_TEST_DATABASE_URL: postgresql+asyncpg://flextravel:flextravel@localhost:5433/flextravel_test
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.3.0 # exact version: this action publishes no floating major tag
       # Services can't mount files, so run the same init script docker-compose uses.
       - name: Create test database
         run: psql -h localhost -p 5433 -U flextravel -d flextravel -f docker/create-test-db.sql
