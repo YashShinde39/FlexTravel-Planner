@@ -22,10 +22,11 @@ revisiting before an interview.
 | [0010](0010-development-workflow.md) | Ownership split, small PRs, restart from scratch | Accepted |
 | [0011](0011-data-sources-and-licensing.md) | Official OTD feeds, raw data kept out of git, NCRTC deferred | Accepted (NCRTC brought forward by 0015; map extract amended by 0016) |
 | [0012](0012-bus-feed-cleaning-and-display.md) | Bus feed cleaning (calendar, duplicate stops, same-spot stops) and route-code display | Accepted |
-| [0013](0013-frontend-architecture.md) | Map-first frontend: MapLibre + OpenFreeMap, shadcn/ui, dark mode, contract-first API | Accepted |
+| [0013](0013-frontend-architecture.md) | Map-first frontend: MapLibre + OpenFreeMap, shadcn/ui, dark mode, contract-first API | Accepted (map amended by 0017) |
 | [0014](0014-interim-routing-engine.md) | OpenTripPlanner as the interim routing engine, behind our own interface; Photon for search | Accepted (bus buffer amended by 0016) |
 | [0015](0015-product-direction-vs-rome2rio.md) | Beat Rome2rio on Delhi NCR in depth: Metro first, trust labels, more local modes, saved trips without login | Accepted |
 | [0016](0016-generated-metro-timetable.md) | Metro timetable generated from OpenStreetMap and published frequencies; interchanges as walkways | Accepted |
+| [0017](0017-google-maps-basemap.md) | Google Maps as the map when a key is configured, the free map as fallback | Accepted |
 
 ## Template
 

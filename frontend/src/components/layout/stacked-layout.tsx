@@ -19,9 +19,9 @@ import { cn } from '@/lib/utils'
 
 type Field = 'from' | 'to'
 
-// Keeps fitted routes clear of the button floating at the top of the map, and of the
-// panel's rounded edge and the map's credit at the bottom.
-const MAP_PADDING = { top: 56, right: 0, bottom: 28, left: 0 }
+// Keeps fitted routes clear of the button floating at the top of the map, and of the map's
+// credit at the bottom.
+const MAP_PADDING = { top: 56, right: 0, bottom: 12, left: 0 }
 
 /** Looks like a field; tapping it opens the search screen with that field focused. */
 function FieldButton({
@@ -101,11 +101,15 @@ export function StackedLayout({ planner }: { planner: TripPlanner }) {
     <main className="flex h-dvh flex-col overflow-hidden bg-background">
       <div
         className={cn(
-          'relative [&_.maplibregl-ctrl-bottom-right]:mb-4',
+          'relative',
           view === 'search' ? 'min-h-0 flex-1' : 'h-[max(40dvh,260px)] shrink-0',
         )}
       >
-        <PlannerMap planner={planner} padding={MAP_PADDING} frameKey={view} />
+        {/* The panel's rounded top overlaps the map's last 16px; the map stops above it, so
+            its logo and credits (which Google's terms require) stay visible. */}
+        <div className="absolute inset-x-0 top-0 bottom-4">
+          <PlannerMap planner={planner} padding={MAP_PADDING} frameKey={view} />
+        </div>
         {view === 'search' ? (
           <Brand className="absolute top-[max(0.75rem,env(safe-area-inset-top))] left-3 z-10 rounded-full border bg-background/90 py-1 pr-3 pl-1 shadow-md backdrop-blur" />
         ) : (

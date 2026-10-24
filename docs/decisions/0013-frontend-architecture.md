@@ -1,6 +1,7 @@
 # ADR-0013: Frontend architecture: map-first, MapLibre + OpenFreeMap, shadcn/ui
 
-- Status: Accepted (supersedes the map library and tile choice in ADR-0008)
+- Status: Accepted (supersedes the map library and tile choice in ADR-0008; the map is
+  Google Maps when a key is configured, ADR-0017)
 - Date: 2026-10-23
 
 ## Context
