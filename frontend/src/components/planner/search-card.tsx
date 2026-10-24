@@ -7,7 +7,7 @@ export function SearchCard({ planner }: { planner: TripPlanner }) {
   const hasRoutes = state.view === 'search' && state.plan.status === 'ready'
   return (
     <section aria-labelledby="planner-heading" className="flex flex-col gap-4">
-      <h1 id="planner-heading" className="font-heading text-2xl font-bold tracking-tight">
+      <h1 id="planner-heading" className="font-heading text-xl font-semibold tracking-tight">
         Where to?
       </h1>
       <TripForm planner={planner} />
@@ -15,7 +15,7 @@ export function SearchCard({ planner }: { planner: TripPlanner }) {
         <button
           type="button"
           onClick={() => dispatch({ type: 'showOptions' })}
-          className="h-12 rounded-lg bg-foreground text-base font-semibold text-background hover:bg-foreground/85"
+          className="h-11 rounded-lg bg-foreground text-[0.9375rem] font-medium text-background hover:bg-foreground/85"
         >
           See routes
         </button>

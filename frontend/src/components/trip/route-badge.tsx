@@ -13,7 +13,7 @@ export function RouteBadge({ leg, className }: { leg: Leg; className?: string })
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-md font-semibold',
+        'inline-flex items-center gap-1 rounded-[0.25rem] leading-normal font-semibold',
         !background && 'bg-foreground text-background',
         className,
       )}

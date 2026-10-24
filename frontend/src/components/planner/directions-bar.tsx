@@ -15,7 +15,7 @@ export function DirectionsBar({ planner, className }: { planner: TripPlanner; cl
       <button
         type="button"
         onClick={() => dispatch({ type: 'showDetails' })}
-        className="mx-auto block h-12 w-full max-w-2xl rounded-lg bg-foreground text-base font-semibold text-background hover:bg-foreground/85"
+        className="mx-auto block h-11 w-full max-w-2xl truncate rounded-lg bg-foreground px-4 text-[0.9375rem] font-medium text-background hover:bg-foreground/85"
       >
         Directions for {selected.title}
       </button>

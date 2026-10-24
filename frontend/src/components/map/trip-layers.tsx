@@ -16,13 +16,13 @@ function EndpointMarker({ place, kind }: { place: Place; kind: 'origin' | 'desti
     <Marker longitude={place.lon} latitude={place.lat} anchor="center">
       <div className="relative" title={place.name}>
         <span
-          className={`grid size-5 place-items-center bg-foreground shadow-md ${
-            kind === 'origin' ? 'rounded-full' : 'rounded-[3px]'
+          className={`grid size-4 place-items-center bg-foreground shadow-sm ring-2 ring-background ${
+            kind === 'origin' ? 'rounded-full' : 'rounded-[2px]'
           }`}
         >
-          <span className={`size-2 bg-background ${kind === 'origin' ? 'rounded-full' : ''}`} />
+          <span className={`size-1.5 bg-background ${kind === 'origin' ? 'rounded-full' : ''}`} />
         </span>
-        <span className="absolute bottom-full left-1/2 mb-1.5 max-w-44 -translate-x-1/2 truncate rounded-md bg-foreground px-2 py-1 text-xs font-semibold whitespace-nowrap text-background shadow-md">
+        <span className="absolute bottom-full left-1/2 mb-1.5 max-w-44 -translate-x-1/2 truncate rounded-md border bg-background/95 px-1.5 py-0.5 text-[0.6875rem] font-medium whitespace-nowrap text-foreground shadow-sm">
           {place.name}
         </span>
       </div>
@@ -50,14 +50,14 @@ export function TripLayers({ colorScheme, origin, destination, option }: TripLay
           type="line"
           filter={isRide as never}
           layout={{ 'line-cap': 'round', 'line-join': 'round' }}
-          paint={{ 'line-color': paper, 'line-width': 10 }}
+          paint={{ 'line-color': paper, 'line-width': 8 }}
         />
         <Layer
           id="trip-ride"
           type="line"
           filter={isRide as never}
           layout={{ 'line-cap': 'round', 'line-join': 'round' }}
-          paint={{ 'line-color': ['coalesce', ['get', 'color'], ink], 'line-width': 5 }}
+          paint={{ 'line-color': ['coalesce', ['get', 'color'], ink], 'line-width': 4.5 }}
         />
         <Layer
           id="trip-walk"
@@ -65,17 +65,19 @@ export function TripLayers({ colorScheme, origin, destination, option }: TripLay
           filter={['==', ['get', 'mode'], 'walk']}
           layout={{ 'line-cap': 'round', 'line-join': 'round' }}
           // Zero-length dashes with round caps draw as dots.
-          paint={{ 'line-color': ink, 'line-width': 4, 'line-dasharray': [0, 2], 'line-opacity': 0.7 }}
+          paint={{ 'line-color': ink, 'line-width': 3, 'line-dasharray': [0, 2], 'line-opacity': 0.6 }}
         />
         <Layer
           id="trip-stops"
           type="circle"
           filter={['==', ['geometry-type'], 'Point']}
+          // Stops passed are small ticks in the line's colour; where you get on and off is
+          // marked more clearly.
           paint={{
-            'circle-radius': ['match', ['get', 'role'], 'board', 5, 2.5],
+            'circle-radius': ['match', ['get', 'role'], 'board', 4, 1.75],
             'circle-color': paper,
-            'circle-stroke-color': ink,
-            'circle-stroke-width': ['match', ['get', 'role'], 'board', 2.5, 1.5],
+            'circle-stroke-color': ['coalesce', ['get', 'color'], ink],
+            'circle-stroke-width': ['match', ['get', 'role'], 'board', 2, 1],
           }}
         />
       </Source>

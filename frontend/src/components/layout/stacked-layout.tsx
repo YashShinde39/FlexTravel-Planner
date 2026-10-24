@@ -127,7 +127,7 @@ export function StackedLayout({ planner }: { planner: TripPlanner }) {
       >
         {view === 'search' && (
           <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 px-5 pt-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-            <h1 className="font-heading text-[1.75rem] leading-tight font-bold tracking-tight">
+            <h1 className="font-heading text-2xl leading-tight font-semibold tracking-tight">
               Where to?
             </h1>
             <div className="relative flex flex-col gap-2">
@@ -155,7 +155,7 @@ export function StackedLayout({ planner }: { planner: TripPlanner }) {
               <button
                 type="button"
                 onClick={() => dispatch({ type: 'showOptions' })}
-                className="h-12 rounded-lg bg-foreground text-base font-semibold text-background hover:bg-foreground/85"
+                className="h-11 rounded-lg bg-foreground text-[0.9375rem] font-medium text-background hover:bg-foreground/85"
               >
                 See routes
               </button>
@@ -165,7 +165,9 @@ export function StackedLayout({ planner }: { planner: TripPlanner }) {
 
         {view === 'options' && (
           <>
-            <h2 className="shrink-0 border-b py-3.5 text-center text-lg font-bold">Choose a route</h2>
+            <h2 className="shrink-0 border-b py-3.5 text-center text-base font-semibold">
+              Choose a route
+            </h2>
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
               <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 px-4 py-4">
                 <TripSummary planner={planner} />

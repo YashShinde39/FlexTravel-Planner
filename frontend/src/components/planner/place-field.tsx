@@ -203,7 +203,7 @@ export function PlaceField({
             setOpen(false)
           }
         }}
-        className="h-12 w-full rounded-lg bg-muted pr-10 pl-10 text-base font-medium outline-none placeholder:font-normal placeholder:text-muted-foreground focus:bg-background focus:ring-2 focus:ring-foreground"
+        className="h-12 w-full rounded-lg bg-muted pr-10 pl-10 text-base outline-none placeholder:font-normal placeholder:text-muted-foreground focus:bg-background focus:ring-[1.5px] focus:ring-foreground"
       />
       {busy ? (
         <LoaderCircle
