@@ -96,7 +96,7 @@ These shaped the design; each was found by running real queries.
 - RAPTOR (ADR-0003) now has a second agency and real interchanges to route across.
 
 ## Why (in my words)
-
+To test the working of the website for having metro data later. 
 > _To fill in: why generate a timetable rather than wait? Why calibrate speeds on
 > published times? Why model interchanges with walkways instead of transfer rules?_
 
