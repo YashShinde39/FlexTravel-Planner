@@ -30,8 +30,9 @@ vector maps.
   - The panel on phones is fixed rather than draggable: simpler, and it let us drop
     `vaul`, whose sheet hid the rest of the page from screen readers.
 - **Map: MapLibre GL + OpenFreeMap.** Open-source vector rendering; free OSM-based tiles
-  with no API key. Styles: `positron` (light) and `fiord` (dark). OpenFreeMap's `dark`
-  style was rejected because it references a missing texture (black blobs over airports,
+  with no API key. Styles: `liberty` (light; amended 2026-10-24 from the grey `positron`,
+  for the familiar, colourful street-map look of Uber's and Rome2rio's maps) and `fiord`
+  (dark). OpenFreeMap's `dark` style was rejected because it references a missing texture (black blobs over airports,
   console warnings).
 - **Components: shadcn/ui on Radix**, with the Nova preset (Geist font, Lucide icons).
   The component source lives in the repo.

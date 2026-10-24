@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import Map, {
   AttributionControl,
-  GeolocateControl,
   type MapRef,
   NavigationControl,
   type PaddingOptions,
@@ -20,7 +19,9 @@ setWorkerUrl(workerUrl)
 
 // OpenFreeMap: free OpenStreetMap vector tiles, no API key (ADR-0013).
 const MAP_STYLES: Record<ColorScheme, string> = {
-  light: 'https://tiles.openfreemap.org/styles/positron',
+  // "liberty": a colourful street map (green parks, blue water, labelled roads), the
+  // familiar look of the maps in Uber and Rome2rio.
+  light: 'https://tiles.openfreemap.org/styles/liberty',
   // "fiord" rather than "dark": the dark style references a texture it doesn't ship,
   // which renders as black blobs over airports and logs warnings.
   dark: 'https://tiles.openfreemap.org/styles/fiord',
@@ -127,7 +128,6 @@ export default function MapView({
       />
       <AttributionControl compact position="bottom-right" />
       {showZoomButtons && <NavigationControl position="bottom-right" showCompass={false} />}
-      <GeolocateControl position="bottom-right" positionOptions={{ enableHighAccuracy: true }} />
     </Map>
   )
 }
