@@ -132,9 +132,12 @@ def stations(geojsonseq_path: Path) -> list[Place]:
             network = tags.get("network")
             is_metro = tags.get("station") == "subway" or network in METRO_NETWORKS
             line = LINE_SUFFIX.search(name)
-            # "Delhi Metro" goes without saying; other networks are worth naming.
+            # "Delhi Metro" goes without saying; other networks are worth naming, by the
+            # name travellers know (RapidX's trains are "Namo Bharat").
             label = "Metro station" if is_metro else "Railway station"
-            shown_network = network if network in {"Rapid Metro Gurgaon", "RapidX"} else None
+            if network == "RapidX":
+                label = "Namo Bharat station"
+            shown_network = network if network == "Rapid Metro Gurgaon" else None
             lon, lat = feature["geometry"]["coordinates"]
             places.append(
                 Place(

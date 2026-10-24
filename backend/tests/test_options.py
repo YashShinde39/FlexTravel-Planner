@@ -12,6 +12,7 @@ from app.trips.options import (
     in_delhi_time,
     pick_transit,
     plan_trip,
+    transit_fare,
     transit_options,
 )
 from app.trips.schemas import Location
@@ -85,6 +86,60 @@ def test_fares() -> None:
     assert fares.auto_fare(5_500, day).min == 30 + 44  # 4 km beyond the first 1.5 km
     assert fares.auto_fare(5_500, night).min == 93  # 74 + 25%, rounded up
     assert (fares.cab_fare(5_000).min, fares.cab_fare(5_000).max) == (108, 120)
+
+
+def metro(start: str, end: str, km: float, line: str = "Yellow Line", minute: int = 0, **kw):
+    return leg(
+        "metro",
+        minute,
+        minute + 10,
+        route=line,
+        agency=kw.pop("agency", "Delhi Metro"),
+        distance_m=int(km * 1000),
+        start=start,
+        end=end,
+        **kw,
+    )
+
+
+def test_one_metro_ticket_covers_changing_lines_inside_a_station() -> None:
+    # Saturday: weekday fares. 8 km + 6 km is one 14 km journey: the 12-21 km slab.
+    rides = [metro("A", "Rajiv Chowk", 8), metro("Rajiv Chowk", "B", 6, "Blue Line", 12)]
+    assert transit_fare(rides).model_dump(include={"min", "max"}) == {"min": 43, "max": 43}
+
+    # Leaving the station in between (here for a bus) means a new Metro ticket.
+    rides = [
+        metro("A", "Rajiv Chowk", 8),
+        leg("bus", 12, 20, route="270", distance_m=3_000),
+        metro("C", "D", 6, "Blue Line", 22),
+    ]
+    fare = transit_fare(rides)
+    assert (fare.min, fare.max) == (32 + 5 + 32, 32 + 10 + 32)
+    assert "smart cards" in fare.note and "Non-AC to AC" in fare.note
+
+
+def test_metro_is_cheaper_on_sundays_and_partners_are_priced_separately() -> None:
+    sunday = START + timedelta(days=1)
+    assert sunday.weekday() == 6
+    assert fares.metro_fare(14_000, sunday).min == 32
+    rapid = metro("Sikanderpur", "Cyber City", 3, "Rapid Metro", agency="Rapid Metro Gurgaon")
+    assert transit_fare([metro("A", "Sikanderpur", 20), rapid]).min == 43 + 20
+    # Namo Bharat, Anand Vihar - Meerut South (about 48 km): standard to premium coach.
+    namo = fares.namo_bharat_fare(48_000)
+    assert (namo.min, namo.max) == (130, 155)
+
+
+def test_metro_options_are_titled_by_line() -> None:
+    trip = Itinerary(
+        legs=[
+            metro("A", "Rajiv Chowk", 8),
+            metro("Rajiv Chowk", "B", 6, "Blue Line", 12),
+            leg("bus", 25, 40, route="270", start="B", end="C"),
+        ],
+        transfers=2,
+    )
+    [option] = transit_options([trip])
+    assert option.title == "Yellow Line + Blue Line + Bus 270"
 
 
 class FakePlanner:

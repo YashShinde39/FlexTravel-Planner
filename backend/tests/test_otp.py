@@ -87,7 +87,12 @@ def test_transit_maps_legs_and_drops_walk_only_journeys() -> None:
         "2026-10-24T09:04:00+05:30",
         "2026-10-24T09:24:00+05:30",
         headsign="Shivaji Stadium Terminal",
-        route={"shortName": "216", "longName": "216UP", "agency": {"name": "DTC"}},
+        route={
+            "gtfsId": "dtc:216UP",
+            "shortName": "216",
+            "longName": "216UP",
+            "agency": {"name": "DTC"},
+        },
         intermediateStops=[{"name": "Mid", "lat": 28.605, "lon": 77.205}],
     )
     walk = otp_leg("WALK", "2026-10-24T09:00:00+05:30", "2026-10-24T09:04:00+05:30")
@@ -103,6 +108,36 @@ def test_transit_maps_legs_and_drops_walk_only_journeys() -> None:
     assert ride.geometry == [(-120.2, 38.5), (-120.95, 40.7)]
     assert ride.distance_m == 1234 and [s.name for s in ride.intermediate_stops] == ["Mid"]
     assert requests[0]["variables"]["dateTime"] == {"earliestDeparture": START.isoformat()}
+
+
+def metro_leg(gtfs_id: str) -> dict[str, Any]:
+    return otp_leg(
+        "SUBWAY",
+        "2026-10-24T09:04:00+05:30",
+        "2026-10-24T09:24:00+05:30",
+        route={
+            "gtfsId": gtfs_id,
+            "shortName": "Yellow Line",
+            "longName": "Samaypur Badli – Millennium City Centre Gurugram",
+            "color": "FFDF00",
+            "textColor": "000000",
+            "agency": {"name": "Delhi Metro"},
+        },
+    )
+
+
+def test_metro_legs_carry_the_line_colour_and_are_estimated_until_official() -> None:
+    planner, _ = planner_returning(plan_result([metro_leg("metro:yellow")]))
+    [itinerary] = asyncio.run(planner.transit(ORIGIN, DESTINATION, START))
+    [ride] = itinerary.legs
+    assert ride.mode == "metro" and ride.route.code == "Yellow Line"
+    assert (ride.route.color, ride.route.text_color) == ("FFDF00", "000000")
+    assert ride.times_estimated  # our generated timetable (ADR-0016)
+
+    # An official feed, loaded under its own id, has real times.
+    planner, _ = planner_returning(plan_result([metro_leg("dmrc:yellow")]))
+    [itinerary] = asyncio.run(planner.transit(ORIGIN, DESTINATION, START))
+    assert not itinerary.legs[0].times_estimated
 
 
 def test_car_route_falls_back_to_nearest_stops_in_car_free_areas() -> None:

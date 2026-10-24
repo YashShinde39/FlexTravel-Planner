@@ -193,6 +193,10 @@ export interface components {
             code: string;
             /** Agency */
             agency?: string | null;
+            /** Color */
+            color?: string | null;
+            /** Text Color */
+            text_color?: string | null;
         };
         /**
          * Step

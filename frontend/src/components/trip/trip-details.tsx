@@ -2,8 +2,9 @@ import { ChevronDown } from 'lucide-react'
 import type { Leg, TripOption } from '@/lib/api/client'
 import { formatDistance, formatDuration, formatFare, formatTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import { MODE_NAMES } from '@/lib/modes'
+import { lineColor, MODE_NAMES } from '@/lib/modes'
 import { ModeIcon } from './mode-icon'
+import { RouteBadge } from './route-badge'
 
 /** A collapsible list, closed by default, e.g. a bus's intermediate stops. */
 function More({ summary, items }: { summary: string; items: string[] }) {
@@ -23,7 +24,32 @@ function More({ summary, items }: { summary: string; items: string[] }) {
   )
 }
 
-function LegBody({ leg }: { leg: Leg }) {
+/** A walk that stays inside one station: into it, out of it, or between two lines. */
+type StationWalk = { kind: 'enter' | 'leave' } | { kind: 'change'; to: Leg }
+
+function stationWalk(legs: Leg[], index: number): StationWalk | undefined {
+  const [before, walk, after] = [legs[index - 1], legs[index], legs[index + 1]]
+  if (walk.mode !== 'walk' || walk.start.name !== walk.end.name) return undefined
+  if (before?.route && after?.route) return { kind: 'change', to: after }
+  if (after?.route && after.start.name === walk.end.name) return { kind: 'enter' }
+  if (before?.route && before.end.name === walk.start.name) return { kind: 'leave' }
+  return undefined
+}
+
+function LegBody({ leg, inStation }: { leg: Leg; inStation?: StationWalk }) {
+  if (inStation) {
+    const what =
+      inStation.kind === 'change'
+        ? `Change to the ${inStation.to.route?.code}`
+        : inStation.kind === 'enter'
+          ? 'Into the station'
+          : 'Out of the station'
+    return (
+      <p className="text-sm text-muted-foreground">
+        {what} · {formatDuration(leg.duration_s)}
+      </p>
+    )
+  }
   if (leg.mode === 'walk') {
     return (
       <>
@@ -50,10 +76,7 @@ function LegBody({ leg }: { leg: Leg }) {
   return (
     <>
       <p className="flex flex-wrap items-center gap-2">
-        <span className="inline-flex items-center gap-1 rounded-md bg-foreground px-2 py-0.5 text-sm font-semibold text-background">
-          <ModeIcon mode={leg.mode} className="size-3.5" />
-          {leg.route.code}
-        </span>
+        <RouteBadge leg={leg} className="px-2 py-0.5 text-sm" />
         {leg.headsign && <span className="text-sm">towards {leg.headsign}</span>}
       </p>
       <p className="mt-1 text-sm text-muted-foreground">
@@ -97,7 +120,7 @@ function PlaceRow({
   )
 }
 
-function LegRow({ leg }: { leg: Leg }) {
+function LegRow({ leg, inStation }: { leg: Leg; inStation?: StationWalk }) {
   const rail =
     leg.mode === 'walk'
       ? 'border-l-2 border-dotted border-muted-foreground'
@@ -108,10 +131,14 @@ function LegRow({ leg }: { leg: Leg }) {
         <ModeIcon mode={leg.mode} className="size-4 text-muted-foreground" />
       </span>
       <span className="flex justify-center py-1">
-        <span className={cn('h-full min-h-12', rail)} aria-hidden />
+        <span
+          className={cn('h-full min-h-12', rail)}
+          style={{ borderColor: lineColor(leg) }}
+          aria-hidden
+        />
       </span>
       <div className="py-3">
-        <LegBody leg={leg} />
+        <LegBody leg={leg} inStation={inStation} />
       </div>
     </li>
   )
@@ -147,7 +174,7 @@ export function TripDetails({ option }: { option: TripOption }) {
             estimated={leg.times_estimated}
             terminal={index === 0 ? 'start' : undefined}
           />,
-          <LegRow key={`leg-${index}`} leg={leg} />,
+          <LegRow key={`leg-${index}`} leg={leg} inStation={stationWalk(legs, index)} />,
         ])}
         <PlaceRow
           time={option.arrival}

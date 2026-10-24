@@ -1,7 +1,9 @@
 {
   "server": { "apiProcessingTimeout": "10s" },
   "routingDefaults": {
-    "transferSlack": "5m",
+    "transferSlack": "0s",
+    "boardSlackForMode": { "BUS": "150s" },
+    "alightSlackForMode": { "BUS": "150s" },
     "numItineraries": 6,
     "searchWindow": "1h"
   }

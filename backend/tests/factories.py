@@ -19,6 +19,7 @@ def leg(
     end_min: int,
     *,
     route: str | None = None,
+    agency: str | None = None,
     distance_m: int = 1_000,
     start: str = "A",
     end: str = "B",
@@ -31,7 +32,7 @@ def leg(
         arrival=START + timedelta(minutes=end_min),
         duration_s=(end_min - start_min) * 60,
         distance_m=distance_m,
-        route=Route(code=route) if route else None,
+        route=Route(code=route, agency=agency) if route else None,
         geometry=[(77.2, 28.6), (77.21, 28.61)],
     )
 

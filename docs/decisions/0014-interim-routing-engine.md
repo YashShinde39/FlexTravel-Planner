@@ -1,6 +1,6 @@
 # ADR-0014: OpenTripPlanner as the interim routing engine, behind our own interface
 
-- Status: Accepted
+- Status: Accepted (bus buffer amended by ADR-0016)
 - Date: 2026-10-23
 
 ## Context

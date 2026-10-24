@@ -14,7 +14,7 @@ _LEG_FIELDS = f"""
     mode duration distance headsign
     start {{ scheduledTime }} end {{ scheduledTime }}
     from {{ {_PLACE} }} to {{ {_PLACE} }}
-    route {{ shortName longName agency {{ name }} }}
+    route {{ gtfsId shortName longName color textColor agency {{ name }} }}
     intermediateStops {{ {_PLACE} }}
     legGeometry {{ points }}
     steps {{ distance relativeDirection absoluteDirection streetName bogusName }}
@@ -47,10 +47,12 @@ query Nearest($lat: Float!, $lon: Float!) {
 }
 """
 
-# OTP mode names -> ours. Delhi has no trams or ferries in the feeds we load.
+# OTP mode names -> ours. Delhi has no trams or ferries in the feeds we load; Namo Bharat
+# is RAIL.
 _MODES: dict[str, Mode] = {"WALK": "walk", "BUS": "bus", "SUBWAY": "metro", "RAIL": "rail"}
-# The bus feed's times are constant-speed estimates (ADR-0007).
-_ESTIMATED_MODES = {"bus"}
+# Feeds whose times are estimates: the bus feed's come from a constant speed (ADR-0007),
+# the Metro's from published frequencies (ADR-0016). An official feed would get its own id.
+_ESTIMATED_FEEDS = {"dtc", "metro"}
 
 _TURNS = {
     "LEFT": "Turn left",
@@ -100,7 +102,12 @@ def map_leg(raw: dict[str, Any]) -> Leg:
         duration_s=round(raw["duration"]),
         distance_m=round(raw["distance"]),
         route=(
-            Route(code=route["shortName"] or route["longName"], agency=route["agency"]["name"])
+            Route(
+                code=route["shortName"] or route["longName"],
+                agency=route["agency"]["name"],
+                color=route.get("color"),
+                text_color=route.get("textColor"),
+            )
             if route
             else None
         ),
@@ -111,7 +118,7 @@ def map_leg(raw: dict[str, Any]) -> Leg:
             Step(instruction=step_instruction(s), distance_m=round(s["distance"]))
             for s in raw.get("steps") or []
         ],
-        times_estimated=mode in _ESTIMATED_MODES,
+        times_estimated=bool(route) and route["gtfsId"].split(":")[0] in _ESTIMATED_FEEDS,
     )
 
 

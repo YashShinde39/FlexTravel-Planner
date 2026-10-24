@@ -17,9 +17,10 @@ on Delhi NCR in depth (ADR-0015). The work below comes next, in this order. RAPT
 is unchanged and can start whenever the owner chooses; the Metro feed gives it a second
 agency to route across.
 
-- **R1. Metro.** Generate a Delhi Metro GTFS feed from OpenStreetMap lines and stations
-  plus DMRC's published frequencies and first/last trains, marked as estimated. Add it
-  to `make data`, then to the results. Replace it with the official feed when available.
+- **R1. Metro.** *(Done, ADR-0016.)* Generate a Delhi Metro GTFS feed from OpenStreetMap
+  lines and stations plus DMRC's published frequencies and first/last trains, marked as
+  estimated. Add it to `make data`, then to the results. Replace it with the official
+  feed when available.
 - **R2. Metro + auto or e-rickshaw combinations** for the last mile.
 - **R3. Trust labels:** scheduled, estimated or live, and how old the data is. A way to
   report a wrong route.
@@ -27,7 +28,8 @@ agency to route across.
   buses.
 - **R5. Bike taxis and app cabs:** Rapido, Uber and Ola price ranges from published rate
   cards.
-- **R6. Namo Bharat and NCR suburban trains.**
+- **R6. Namo Bharat and NCR suburban trains.** *(Namo Bharat done with R1; suburban
+  trains to come.)*
 - **R7. Saved places, recent trips and shareable links,** stored on the device.
 - **R8. Safety and accessibility:** late-night and women's-safety notes, the women's
   coach, step-free stations and lifts.

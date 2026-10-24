@@ -30,8 +30,11 @@ class Stop(BaseModel):
 
 
 class Route(BaseModel):
-    code: str  # as printed on the vehicle, e.g. "764M STL"
+    code: str  # as printed on the vehicle, e.g. "764M STL", or the line, e.g. "Yellow Line"
     agency: str | None = None
+    # The line's colour and a readable text colour on it, as hex "RRGGBB" (Metro lines).
+    color: str | None = None
+    text_color: str | None = None
 
 
 class Step(BaseModel):
@@ -55,8 +58,9 @@ class Leg(BaseModel):
     # [lon, lat] pairs, GeoJSON order, ready for the map.
     geometry: list[tuple[float, float]]
     steps: list[Step] = []
-    # Bus times in the Delhi feed are estimates from a constant speed (ADR-0007), and
-    # auto/cab times are estimated from typical traffic. Shown as "~" in the UI.
+    # Bus times in the Delhi feed are estimates from a constant speed (ADR-0007), Metro
+    # times come from a generated timetable (ADR-0016), and auto/cab times are estimated
+    # from typical traffic. Shown as "~" in the UI.
     times_estimated: bool = False
 
 

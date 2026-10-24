@@ -41,11 +41,23 @@ No metro mirror is available.
 make data
 ```
 
-This downloads the OpenStreetMap extract for northern India from
+This downloads the OpenStreetMap extracts for northern and central India from
 [Geofabrik](https://download.geofabrik.de/asia/india.html) into `data/raw/osm/` (once,
-about 220 MB, checksum verified), cuts it to Delhi NCR, cleans the bus feed (ADR-0012),
-loads stops and stations into Postgres and builds the OpenTripPlanner graph (ADR-0014).
+about 575 MB, checksums verified; NCR spans both: Noida, Ghaziabad and Meerut are in
+the central one). It then:
+
+- cuts both to Delhi NCR and merges them;
+- cleans the bus feed (ADR-0012);
+- generates the Metro and Namo Bharat timetable from OpenStreetMap and
+  `backend/app/data/metro_lines.py` (ADR-0016), printing a calibration report;
+- loads stops and stations into Postgres;
+- builds the OpenTripPlanner graph (ADR-0014).
+
 Outputs go to `data/work/`. OpenStreetMap data is © OpenStreetMap contributors, ODbL.
+
+The Metro report lists interchanges with no entrances mapped in OpenStreetMap; changing
+lines there can't use its change time until someone maps them (at openstreetmap.org, as
+`railway=subway_entrance` nodes).
 
 ## Inspect
 
