@@ -29,7 +29,7 @@ function ResultsColumn({
             <TripDirections planner={planner} />
           ) : (
             <>
-              <h2 className="font-heading text-3xl font-bold tracking-tight">Choose a route</h2>
+              <h2 className="font-heading text-2xl font-semibold tracking-tight">Choose a route</h2>
               {showSummary && <TripSummary planner={planner} />}
               <RouteOptions planner={planner} />
             </>
@@ -86,7 +86,7 @@ export function ColumnsLayout({
           {showForm &&
             (desktop ? (
               <div className={cn('flex shrink-0 flex-col gap-4', wide ? 'w-80' : 'w-[360px]')}>
-                <div className="rounded-2xl border-2 p-5">
+                <div className="rounded-xl border p-5 shadow-xs">
                   <SearchCard planner={planner} />
                 </div>
                 {!showResults && <Attribution />}
@@ -108,7 +108,7 @@ export function ColumnsLayout({
         <div
           className={cn(
             'relative min-w-0 flex-1 overflow-hidden bg-muted',
-            desktop ? 'rounded-2xl' : 'rounded-xl',
+            desktop ? 'rounded-xl ring-1 ring-border' : 'rounded-lg',
           )}
         >
           <PlannerMap

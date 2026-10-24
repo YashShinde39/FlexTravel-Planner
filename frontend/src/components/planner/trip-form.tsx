@@ -38,11 +38,14 @@ export function DepartureTime({ planner }: { planner: TripPlanner }) {
         type="button"
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
-        className="inline-flex h-9 items-center gap-2 rounded-full bg-muted px-3.5 text-sm font-medium hover:bg-accent"
+        className="inline-flex h-8 items-center gap-1.5 rounded-full bg-muted px-3 text-[0.8125rem] font-medium hover:bg-accent"
       >
-        <Clock className="size-4" aria-hidden />
+        <Clock className="size-3.5" aria-hidden />
         {label}
-        <ChevronDown className="size-4 transition-transform in-aria-expanded:rotate-180" aria-hidden />
+        <ChevronDown
+          className="size-3.5 text-muted-foreground transition-transform in-aria-expanded:rotate-180"
+          aria-hidden
+        />
       </button>
       {open && (
         <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -138,7 +141,7 @@ export function TripForm({
           disabled={!canSwap}
           onClick={() => dispatch({ type: 'swap' })}
           aria-label="Swap start and destination"
-          className="grid size-10 shrink-0 place-items-center rounded-full bg-muted hover:bg-accent disabled:opacity-40"
+          className="grid size-9 shrink-0 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-40"
         >
           <ArrowDownUp className="size-4" aria-hidden />
         </button>

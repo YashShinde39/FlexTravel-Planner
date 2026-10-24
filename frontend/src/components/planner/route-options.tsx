@@ -60,8 +60,8 @@ export function RouteOptions({ planner }: { planner: TripPlanner }) {
         onSelect={(id) => dispatch({ type: 'select', id })}
       />
       {plan.response.notices.length > 0 && (
-        <div className="flex gap-2 rounded-lg bg-muted px-3 py-2.5 text-xs text-muted-foreground">
-          <Info className="mt-px size-3.5 shrink-0" aria-hidden />
+        <div className="flex gap-2 px-3 pt-1 text-xs leading-relaxed text-muted-foreground">
+          <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden />
           <ul className="space-y-1">
             {plan.response.notices.map((notice) => (
               <li key={notice}>{notice}</li>

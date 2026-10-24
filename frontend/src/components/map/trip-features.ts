@@ -17,7 +17,7 @@ export function tripFeatures(option: TripOption | null): FeatureCollection {
       if (leg.mode === 'walk' || !leg.route) return [line]
       const point = (stop: { lat: number; lon: number }, role: 'board' | 'pass') => ({
         type: 'Feature' as const,
-        properties: { role },
+        properties: { role, color: lineColor(leg) ?? null },
         geometry: { type: 'Point' as const, coordinates: [stop.lon, stop.lat] },
       })
       return [

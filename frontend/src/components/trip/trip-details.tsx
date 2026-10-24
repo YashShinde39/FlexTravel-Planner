@@ -153,7 +153,7 @@ export function TripDetails({ option }: { option: TripOption }) {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <p className="font-heading text-3xl font-bold tracking-tight">
+        <p className="font-heading text-[1.75rem] leading-tight font-semibold tracking-tight">
           {formatDuration(option.duration_s)}
         </p>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -185,7 +185,7 @@ export function TripDetails({ option }: { option: TripOption }) {
       </ol>
 
       {(fareNote || anyEstimated) && (
-        <div className="space-y-1 rounded-lg bg-muted px-4 py-3 text-xs text-muted-foreground">
+        <div className="space-y-1 border-t pt-3 text-xs leading-relaxed text-muted-foreground">
           {anyEstimated && <p>Times marked ~ are estimates.</p>}
           {fareNote && <p>{fareNote}</p>}
         </div>
