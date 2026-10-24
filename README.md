@@ -34,6 +34,26 @@ Then open http://127.0.0.1:5173 (app) or http://127.0.0.1:8000/docs (API).
 
 To debug one side, run them in separate terminals: `make dev-api` and `make dev-web`.
 
+### Google Maps (optional)
+
+The app shows Google Maps when given a key (ADR-0017), and a free OpenStreetMap map
+otherwise. To use Google Maps, create `frontend/.env.local` (git ignores it) with:
+
+```bash
+VITE_GOOGLE_MAPS_API_KEY=your-browser-key
+VITE_GOOGLE_MAPS_MAP_ID=your-map-id
+```
+
+then restart `make dev`. Getting both, in the [Google Cloud console](https://console.cloud.google.com/google/maps-apis):
+
+1. Create a project and link a billing account (map loads are free up to Google's
+   monthly quota). Set a budget alert under Billing.
+2. Enable the **Maps JavaScript API**.
+3. **Keys & Credentials → Create credentials → API key.** Restrict it: application
+   restriction *Websites* (`http://127.0.0.1:5173/*`, `http://localhost:5173/*`, and your
+   production address), API restriction *Maps JavaScript API*.
+4. **Map Management → Create map ID**, type *JavaScript*, *Vector*. Copy its ID.
+
 | Command | What it does |
 | --- | --- |
 | `make test` / `make test-web` / `make e2e` | Backend tests / frontend unit tests / browser tests |

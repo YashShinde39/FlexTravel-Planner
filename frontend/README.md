@@ -26,7 +26,8 @@ src/
     layout/columns-layout.tsx     laptops and sideways phones: planner columns beside the map
     layout/stacked-layout.tsx     phones and upright tablets: map on top, panel below
     map/planner-map.tsx           lazy-loads the map for the planner's trip
-    map/map-view.tsx              MapLibre map: styles, NCR bounds, framing the route
+    map/map-view.tsx              free map (MapLibre): styles, NCR bounds, framing the route
+    map/google-map-view.tsx       Google Maps, used when a key is set (ADR-0017)
     map/trip-layers.tsx           the selected route: ride lines, walking dots, stops, markers
     planner/                      the pieces layouts arrange: search card, phone search
                                   screen, From/To combobox, route options, directions
